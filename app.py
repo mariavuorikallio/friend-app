@@ -11,8 +11,14 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    all_items = items.get_items()
+    return render_template("index.html", items=all_items)
     
+@app.route("/item/<int:item_id>")
+def show_item(item_id):
+    item = items.get_item(item_id)
+    return render_template("show_item.html", item=item)
+
 @app.route("/new_item")
 def new_item():
     return render_template("new_item.html")
@@ -52,11 +58,11 @@ def create():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-       return render_template("login.html")
-       
+        return render_template("login.html")
+        
     if request.method == "POST":
-       username = request.form["username"]
-       password = request.form["password"]
+        username = request.form["username"]
+        password = request.form["password"]
     
     sql = "SELECT id, password_hash FROM users WHERE username = ?"
     result = db.query(sql, [username])[0]
