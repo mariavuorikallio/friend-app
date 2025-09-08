@@ -1,9 +1,20 @@
 # friend-app
 
-Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
-Käyttäjä pystyy lisäämään sovellukseen seurahakuilmoituksia. Lisäksi käyttäjä pystyy muokkaamaan ja poistamaan lisäämiään seurahakuilmoituksia.
-Käyttäjä näkee sovellukseen lisätyt seurahakuilmoitukset. Käyttäjä näkee sekä itse lisäämänsä että muiden käyttäjien lisäämät seurahakuilmoitukset.
-Käyttäjä pystyy etsimään seurahakuilmoituksia hakusanalla tai muulla perusteella (mm. asuinpaikka, mielenkiinnonkohteet). Käyttäjä pystyy hakemaan sekä itse lisäämiään että muiden käyttäjien lisäämiä seurahakuilmoituksia.
-Sovelluksessa on käyttäjäsivut, jotka näyttävät jokaisesta käyttäjästä tilastoja ja käyttäjän lisäämään seurahakuilmoitukset.
-Käyttäjä pystyy valitsemaan seurahakuilmoitukseen yhden tai useamman luokittelun, esim. asuinpaikka, mielenkiinnonkohteet. Mahdolliset luokat ovat tietokannassa.
-Sovelluksessa on pääasiallisen tietokohteen lisäksi toissijainen tietokohde, joka täydentää pääasiallista tietokohdetta. Käyttäjä pystyy lisäämään toissijaisia tietokohteita omiin ja muiden käyttäjien tietokohteisiin liittyen, esim. keskusteluita toisten käyttäjien kanssa.
+Käyttäjän hallinta:
+- käyttäjä voi luoda tilin ja kirjautua sisään.
+- sovelluksessa on käyttäjäsivut, jotka esittävät käyttäjäkohtaisia tilastoja.
+
+Seurahakuilmoitukset:
+- käyttäjä voi luoda, muokata ja poistaa omia seurahakuilmoituksiaan.
+- käyttäjä näkee kaikki sovellukseen lisätyt ilmoitukset (sekä omat että muiden käyttäjien).
+
+Ilmoitusten haku:
+- ilmoituksia voi etsiä hakusanoilla tai luokittelujen perusteella, kuten asuinpaikka tai mielenkiinnonkohteet.
+
+Tarkennettu luokittelu:
+- käyttäjä voi valita ilmoitukseen yhden tai useamman luokittelun.
+- mahdolliset luokat tallennetaan tietokantaan.
+
+Toissijaiset tietokohteet:
+- sovelluksessa on toissijaisia tietokohteita (esim. keskustelut), jotka täydentävät pääasiallisia ilmoituksia.
+- käyttäjä voi lisätä näitä kohteita omiin ja muiden käyttäjien ilmoituksiin.
