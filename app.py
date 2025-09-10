@@ -22,7 +22,7 @@ def show_item(item_id):
 @app.route("/new_item")
 def new_item():
     return render_template("new_item.html")
-    
+        
 @app.route("/create_item", methods=["POST"])
 def create_item():
     title = request.form["title"]
@@ -33,7 +33,22 @@ def create_item():
     items.add_item(title, description, age, user_id)
     
     return redirect("/")
+
+@app.route("/edit_item/<int:item_id>")
+def edit_item(item_id):
+    item = items.get_item(item_id)
+    return render_template("edit_item.html", item=item)
     
+@app.route("/update_item", methods=["POST"])
+def update_item():
+    item_id = request.form["item_id"]
+    title = request.form["title"]
+    description = request.form["description"]
+    
+    items.update_item(item_id, title, description)
+    
+    return redirect("/item/" + str(item_id))
+        
 @app.route("/register")
 def register():
     return render_template("register.html")
