@@ -33,6 +33,3 @@ $ flask run
 ...
 
 - mahdolliset luokat tallennetaan tietokantaan.
-
-Käynnistysohjeet:
-- 
