@@ -1,20 +1,35 @@
 # friend-app
 
-Käyttäjän hallinta:
-- käyttäjä voi luoda tilin ja kirjautua sisään.
-- sovelluksessa on käyttäjäsivut, jotka esittävät käyttäjäkohtaisia tilastoja.
+## Sovelluksen toiminnot
 
-Seurahakuilmoitukset:
-- käyttäjä voi luoda, muokata ja poistaa omia seurahakuilmoituksiaan.
-- käyttäjä näkee kaikki sovellukseen lisätyt ilmoitukset (sekä omat että muiden käyttäjien).
+* Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
+* Käyttäjä pystyy lisäämään, muokkaamaan ja poistamaan seuranhakuilmoituksia
+* Käyttäjä näkee sovellukseen lisätyt seuranhakuilmoitukset
+* Käyttäjä pystyy etsimään ilmoituksia hakusanalla
+* Käyttäjä voi valita ilmoitukseen yhden tai useamman luokittelun. (esim. oman ikänsä)
 
-Ilmoitusten haku:
-- ilmoituksia voi etsiä hakusanoilla tai luokittelujen perusteella, kuten asuinpaikka tai mielenkiinnonkohteet.
+## Sovelluksen asennus
 
-Tarkennettu luokittelu:
-- käyttäjä voi valita ilmoitukseen yhden tai useamman luokittelun.
+Asenna flask -kirjasto:
+
+...
+
+$ pip install flask 
+...
+
+Luo tietokannan taulut ja lisää alkutiedot:
+
+...
+
+$ sqlite3 database.db < schema.sql
+$ sqlite3 database.db < init.sql
+...
+
+Voit käynnistää sovelluksen näin:
+
+...
+
+$ flask run
+...
+
 - mahdolliset luokat tallennetaan tietokantaan.
-
-Toissijaiset tietokohteet:
-- sovelluksessa on toissijaisia tietokohteita (esim. keskustelut), jotka täydentävät pääasiallisia ilmoituksia.
-- käyttäjä voi lisätä näitä kohteita omiin ja muiden käyttäjien ilmoituksiin.
