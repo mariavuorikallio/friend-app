@@ -4,6 +4,12 @@ CREATE TABLE users (
     password_hash TEXT
 );
 
+CREATE TABLE classes (
+   id INTEGER PRIMARY KEY,
+   title TEXT,
+   value TEXT
+);
+
 CREATE TABLE items (
    id INTEGER PRIMARY KEY,
    title TEXT,
