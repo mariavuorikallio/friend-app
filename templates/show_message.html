@@ -10,7 +10,7 @@
   {% if session.user_id == message.user_id %}
   <p>
     <a href="/edit_message/{{ message.id }}">Muokkaa</a>
-    <a href="/message_item/{{ message.id }}">Poista</a>
+    <a href="/remove_message/{{ message.id }}">Poista</a>
   </p>
   {% endif %}
   <p>
@@ -31,6 +31,27 @@
      {% endfor %}
     </ul>
   </p>
+  {% endif %}
+    <hr>
+
+  <h2>Vastaukset</h2>
+{% if forum %}
+  {% for f in forum %}
+   <p><strong>{{ f.username }} ({{ f.sent_at }}):</strong></p>
+    <p>{{ f.content }}</p>
+    <hr>
+  {% endfor %}
+{% else %}
+  <p>Ei vielä viestejä.</p>
+{% endif %}
+
+  {% if session.user_id %}
+  <h3>Lisää vastaus</h3>
+  <form action="/new_reply" method="post">
+    <textarea name="content" rows="4" cols="50"></textarea><br>
+    <input type="hidden" name="message_id" value="{{ message.id }}">
+    <input type="submit" value="Lähetä">
+  </form>
   {% endif %}
   <p>
    <a href="/">Takaisin</a>

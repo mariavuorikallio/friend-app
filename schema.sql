@@ -10,7 +10,7 @@ CREATE TABLE classes (
    value TEXT
 );
 
-CREATE TABLE items (
+CREATE TABLE messages (
    id INTEGER PRIMARY KEY,
    title TEXT,
    description TEXT,
@@ -18,9 +18,9 @@ CREATE TABLE items (
    user_id INTEGER REFERENCES users
 );
 
-CREATE TABLE item_classes (
+CREATE TABLE message_classes (
     id INTEGER PRIMARY KEY,
-    item_id INTEGER REFERENCES items,
+    message_id INTEGER REFERENCES messages,
     title TEXT,
     value TEXT    
 );

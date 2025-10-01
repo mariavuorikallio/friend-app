@@ -3,9 +3,10 @@ from flask import Flask
 from flask import abort, redirect, render_template, request, session
 import config
 import db
-import items
+import messages
 import re
 import users
+import forum
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -16,43 +17,47 @@ def require_login():
         
 @app.route("/")
 def index():
-    all_items = items.get_items()
-    return render_template("index.html", items=all_items)
-    
+    all_messages = messages.get_messages()
+    return render_template("index.html", messages=all_messages)
+
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
     user = users.get_user(user_id)
     if not user:
        abort(404)
-    items = users.get_items(user_id)
-    return render_template("show_user.html", user=user, items=items)
+    user_messages = users.get_messages(user_id)
+    return render_template("show_user.html", user=user, messages=user_messages)
     
-@app.route("/find_item")
-def find_item():
+@app.route("/find_message")
+def find_message():
     query = request.args.get("query")
     if query:
-       results = items.find_items(query)
+       results = messages.find_messages(query)
     else:
        query = ""
        results = []
-    return render_template("find_item.html", query=query, results=results)
+    return render_template("find_message.html", query=query, results=results)
     
-@app.route("/item/<int:item_id>")
-def show_item(item_id):
-    item = items.get_item(item_id)
-    if not item:
+@app.route("/message/<int:message_id>")
+def show_message(message_id):
+    message = messages.get_message(message_id)
+    if not message:
        abort(404)
-    classes = items.get_classes(item_id)
-    return render_template("show_item.html", item=item, classes=classes)
+    classes = messages.get_classes(message_id)
+    
+    forum_messages = []
+    if session.get("user_id") == message["user_id"]:
+       forum_messages = forum.get_forum_messages(message_id)
+    return render_template("show_message.html", message=message, classes=classes, forum=forum_messages)
 
-@app.route("/new_item")
-def new_item():
+@app.route("/new_message")
+def new_message():
     require_login()
-    classes = items.get_all_classes()
-    return render_template("new_item.html", classes=classes)
+    classes = messages.get_all_classes()
+    return render_template("new_message.html", classes=classes)
         
-@app.route("/create_item", methods=["POST"])
-def create_item():
+@app.route("/create_message", methods=["POST"])
+def create_message():
     require_login()
     
     title = request.form["title"]
@@ -66,7 +71,7 @@ def create_item():
        abort(403)
     user_id = session["user_id"]
     
-    all_classes = items.get_all_classes()
+    all_classes = messages.get_all_classes()
      
     classes = []
     for entry in request.form.getlist("classes"):
@@ -78,36 +83,36 @@ def create_item():
               abort(403)
            classes.append((class_title, class_value))
     
-    items.add_item(title, description, age, user_id, classes)
+    messages.add_message(title, description, age, user_id, classes)
     
     return redirect("/")
 
-@app.route("/edit_item/<int:item_id>")
-def edit_item(item_id):
+@app.route("/edit_message/<int:message_id>")
+def edit_message(message_id):
     require_login()
-    item = items.get_item(item_id)
-    if not item:
+    message = messages.get_message(message_id)
+    if not message:
        abort(404)
-    if item["user_id"] != session["user_id"]:
+    if message["user_id"] != session["user_id"]:
        abort(403)
        
-    all_classes = items.get_all_classes()
+    all_classes = messages.get_all_classes()
     classes = {}
     for my_class in all_classes:
         classes[my_class] = ""
-    for entry in items.get_classes(item_id):
+    for entry in messages.get_classes(message_id):
         classes[entry["title"]] = entry["value"]
         
-    return render_template("edit_item.html", item=item, classes=classes, all_classes=all_classes)
+    return render_template("edit_message.html", message=message, classes=classes, all_classes=all_classes)
     
-@app.route("/update_item", methods=["POST"])
-def update_item():
+@app.route("/update_message", methods=["POST"])
+def update_message():
     require_login()
-    item_id = request.form["item_id"]
-    item = items.get_item(item_id)
-    if not item:
+    message_id = request.form["message_id"]
+    message = messages.get_message(message_id)
+    if not message:
        abort(404)
-    if item["user_id"] != session["user_id"]:
+    if message["user_id"] != session["user_id"]:
        abort(403)
     
     title = request.form["title"]
@@ -116,6 +121,8 @@ def update_item():
     description = request.form["description"]
     if not description or len(description) > 1000:
        abort(403)
+
+    all_classes = messages.get_all_classes()
     
     classes = []
     for entry in request.form.getlist("classes"):
@@ -127,28 +134,28 @@ def update_item():
               abort(403)
            classes.append((class_title, class_value))
            
-    items.update_item(item_id, title, description, classes)
+    messages.update_message(message_id, title, description, classes)
     
-    return redirect("/item/" + str(item_id))
+    return redirect("/message/" + str(message_id))
     
-@app.route("/remove_item/<int:item_id>",  methods=["GET", "POST"])
-def remove_item(item_id):
+@app.route("/remove_message/<int:message_id>",  methods=["GET", "POST"])
+def remove_message(message_id):
     require_login()
-    item = items.get_item(item_id)
-    if not item:
+    message = messages.get_message(message_id)
+    if not message:
        abort(404)
-    if item["user_id"] != session["user_id"]:
+    if message["user_id"] != session["user_id"]:
        abort(403)
        
     if request.method == "GET": 
-       return render_template("remove_item.html", item=item)
+       return render_template("remove_message.html", message=message)
        
     if request.method == "POST":
        if "remove" in request.form:
-           items.remove_item(item_id)
+           messages.remove_message(message_id)
            return redirect("/")
        else:
-           return redirect("/item/" + str(item_id)) 
+           return redirect("/message/" + str(message_id)) 
         
 @app.route("/register")
 def register():
@@ -192,5 +199,4 @@ def logout():
         del session["user_id"]
         del session["username"]
     return redirect("/")
-    
-    
+
