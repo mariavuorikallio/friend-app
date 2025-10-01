@@ -18,7 +18,7 @@ def add_message(title, description, age, user_id, classes):
     
     message_id = db.last_insert_id()
     
-    sql = "INSERT into message_classes (message_id, title, value) VALUES (?, ?, ?)"
+    sql = "INSERT INTO message_classes (message_id, title, value) VALUES (?, ?, ?)"
     for title, value in classes:
         db.execute(sql, [message_id, title, value])
  
@@ -29,6 +29,14 @@ def get_classes(message_id):
 def get_messages():
     sql = "SELECT id, title FROM messages ORDER BY id DESC"
     return db.query(sql)
+
+def get_user_messages(user_id):
+    sql = """SELECT DISTINCT m.id, m.title
+             FROM messages m
+             JOIN replies r ON r.message_id = m.id
+             WHERE m.user_id = ?
+             ORDER BY m.id DESC"""
+    return db.query(sql, [user_id])
     
 def get_message(message_id):
     sql = """SELECT messages.id,
@@ -50,14 +58,14 @@ def update_message(message_id, title, description, classes):
     sql = "DELETE FROM message_classes WHERE message_id = ?"
     db.execute(sql, [message_id])
     
-    sql = "INSERT into message_classes (message_id, title, value) VALUES (?, ?, ?)"
+    sql = "INSERT INTO message_classes (message_id, title, value) VALUES (?, ?, ?)"
     for title, value in classes:
         db.execute(sql, [message_id, title, value])    
     
 def remove_message(message_id):
     sql = "DELETE FROM message_classes WHERE message_id = ?"
     db.execute(sql, [message_id])
-    sql = "DELETE FROM items WHERE id = ?"
+    sql = "DELETE FROM messages WHERE id = ?"
     db.execute(sql, [message_id]) 
     
 def find_messages(query):
@@ -67,4 +75,5 @@ def find_messages(query):
               ORDER BY id DESC""" 
     like = "%" + query + "%"
     return db.query(sql, [like, like])
+
             

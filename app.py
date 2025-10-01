@@ -7,9 +7,14 @@ import messages
 import re
 import users
 import forum
+import secrets
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+def check_csrf():
+    if request.form.get("csrf_token") != session.get("csrf_token"):
+        abort(403)
 
 def require_login():
     if "user_id" not in session:
@@ -42,13 +47,27 @@ def find_message():
 def show_message(message_id):
     message = messages.get_message(message_id)
     if not message:
-       abort(404)
+        abort(404)
+
     classes = messages.get_classes(message_id)
-    
     forum_messages = []
-    if session.get("user_id") == message["user_id"]:
-       forum_messages = forum.get_forum_messages(message_id)
-    return render_template("show_message.html", message=message, classes=classes, forum=forum_messages)
+    user_id = session.get("user_id")
+
+    if user_id:
+        all_forum_messages = forum.get_forum_messages(message_id)
+
+        authorized_users = {message["user_id"]}
+        authorized_users.update([f["user_id"] for f in all_forum_messages])
+        
+        if user_id in authorized_users:
+            forum_messages = all_forum_messages
+
+    return render_template(
+        "show_message.html",
+        message=message,
+        classes=classes,
+        forum=forum_messages
+    )
 
 @app.route("/new_message")
 def new_message():
@@ -59,6 +78,7 @@ def new_message():
 @app.route("/create_message", methods=["POST"])
 def create_message():
     require_login()
+    check_csrf()
     
     title = request.form["title"]
     if not title or len(title) > 50:
@@ -108,6 +128,7 @@ def edit_message(message_id):
 @app.route("/update_message", methods=["POST"])
 def update_message():
     require_login()
+    check_csrf()
     message_id = request.form["message_id"]
     message = messages.get_message(message_id)
     if not message:
@@ -151,6 +172,7 @@ def remove_message(message_id):
        return render_template("remove_message.html", message=message)
        
     if request.method == "POST":
+       check_csrf()
        if "remove" in request.form:
            messages.remove_message(message_id)
            return redirect("/")
@@ -189,6 +211,7 @@ def login():
     if user_id:
         session["user_id"] = user_id
         session["username"] = username
+        session["csrf_token"] = secrets.token_hex(16)
         return redirect("/")
     else:
         return "VIRHE: väärä tunnus tai salasana"

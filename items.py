@@ -12,57 +12,57 @@ def get_all_classes():
        
     return classes
     
-def add_item(title, description, age, user_id, classes):
-    sql = """INSERT INTO items (title, description, age, user_id) VALUES (?, ?, ?, ?)"""
+def add_message(title, description, age, user_id, classes):
+    sql = """INSERT INTO messages (title, description, age, user_id) VALUES (?, ?, ?, ?)"""
     db.execute(sql, [title, description, age, user_id])
     
     item_id = db.last_insert_id()
     
-    sql = "INSERT into item_classes (item_id, title, value) VALUES (?, ?, ?)"
+    sql = "INSERT into message_classes (item_id, title, value) VALUES (?, ?, ?)"
     for title, value in classes:
         db.execute(sql, [item_id, title, value])
  
-def get_classes(item_id):
-    sql = "SELECT title, value FROM item_classes WHERE item_id = ?"
-    return db.query(sql, [item_id])  
+def get_classes(message_id):
+    sql = "SELECT title, value FROM message_classes WHERE item_id = ?"
+    return db.query(sql, [message_id])  
     
-def get_items():
-    sql = "SELECT id, title FROM items ORDER BY id DESC"
+def get_messages():
+    sql = "SELECT id, title FROM messages ORDER BY id DESC"
     return db.query(sql)
     
-def get_item(item_id):
-    sql = """SELECT items.id,
-                    items.title,
-                    items.description,
-                    items.age,
+def get_message(message_id):
+    sql = """SELECT messages.id,
+                    messages.title,
+                    messages.description,
+                    messages.age,
                     users.id user_id,
                     users.username
-             FROM items, users
-             WHERE items.user_id = users.id AND
-                   items.id = ?"""
-    result = db.query(sql, [item_id])
+             FROM messages, users
+             WHERE messages.user_id = users.id AND
+                   messages.id = ?"""
+    result = db.query(sql, [message_id])
     return result[0] if result else None
      
-def update_item(item_id, title, description, classes):
-    sql = """UPDATE items SET title = ?, description = ? WHERE id = ?"""
-    db.execute(sql, [title, description, item_id])
+def update_message(message_id, title, description, classes):
+    sql = """UPDATE messages SET title = ?, description = ? WHERE id = ?"""
+    db.execute(sql, [title, description, message_id])
     
-    sql = "DELETE FROM item_classes WHERE item_id = ?"
-    db.execute(sql, [item_id])
+    sql = "DELETE FROM message_classes WHERE message_id = ?"
+    db.execute(sql, [message_id])
     
-    sql = "INSERT into item_classes (item_id, title, value) VALUES (?, ?, ?)"
+    sql = "INSERT into message_classes (message_id, title, value) VALUES (?, ?, ?)"
     for title, value in classes:
-        db.execute(sql, [item_id, title, value])    
+        db.execute(sql, [message_id, title, value])    
     
-def remove_item(item_id):
-    sql = "DELETE FROM item_classes WHERE item_id = ?"
-    db.execute(sql, [item_id])
-    sql = "DELETE FROM items WHERE id = ?"
-    db.execute(sql, [item_id]) 
+def remove_message(message_id):
+    sql = "DELETE FROM message_classes WHERE message_id = ?"
+    db.execute(sql, [message_id])
+    sql = "DELETE FROM messages WHERE id = ?"
+    db.execute(sql, [message_id]) 
     
-def find_items(query):
+def find_messages(query):
     sql =  """SELECT id, title
-              FROM items
+              FROM messages
               WHERE title LIKE ? OR description LIKE ?
               ORDER BY id DESC""" 
     like = "%" + query + "%"

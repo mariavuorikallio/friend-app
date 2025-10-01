@@ -34,10 +34,11 @@
   {% endif %}
     <hr>
 
-  <h2>Vastaukset</h2>
+<h2>Vastaukset</h2>
+
 {% if forum %}
   {% for f in forum %}
-   <p><strong>{{ f.username }} ({{ f.sent_at }}):</strong></p>
+    <p><strong>{{ f.username }} ({{ f.sent_at }}):</strong></p>
     <p>{{ f.content }}</p>
     <hr>
   {% endfor %}
@@ -45,17 +46,18 @@
   <p>Ei vielä viestejä.</p>
 {% endif %}
 
-  {% if session.user_id %}
+{% if session.user_id %}
   <h3>Lisää vastaus</h3>
   <form action="/new_reply" method="post">
     <textarea name="content" rows="4" cols="50"></textarea><br>
     <input type="hidden" name="message_id" value="{{ message.id }}">
     <input type="submit" value="Lähetä">
   </form>
-  {% endif %}
-  <p>
-   <a href="/">Takaisin</a>
- </p>
+{% endif %}
+
+<p>
+  <a href="/">Takaisin</a>
+</p>
 </body>
 
 </html>

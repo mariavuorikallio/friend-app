@@ -17,6 +17,7 @@
       <textarea name="description" rows="8" cols="60" maxlength="1000" required >{{ message.description }}</textarea>
     </p>
     <input type="hidden" name="message_id" value="{{ message.id }}" />
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
         {% for class in all_classes %}
     <p>
      {{ class }}: <br />
