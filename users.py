@@ -14,7 +14,8 @@ def get_messages(user_id):
 def create_user(username, password):
     password_hash = generate_password_hash(password)
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-    db.execute(sql, [username, password_hash])
+    user_id = db.execute(sql, [username, password_hash])
+    return user_id
 
 def check_login(username, password):
     sql = "SELECT id, password_hash FROM users WHERE username = ?"

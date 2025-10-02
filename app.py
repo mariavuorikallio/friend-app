@@ -192,11 +192,15 @@ def create():
         return "VIRHE: salasanat eivät ole samat"
             
     try:
-       users.create_user(username, password1)
+       user_id = users.create_user(username, password1)
     except sqlite3.IntegrityError:
         return "VIRHE: tunnus on jo varattu"
         
-    return "Tunnus luotu"
+    session["user_id"] = user_id
+    session["username"] = username
+    session["csrf_token"] = secrets.token_hex(16)
+        
+    return redirect("/")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
