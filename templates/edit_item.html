@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Muokkaa ilmoitusta</title>
+</head>
+
+<body>
+  <h1>Muokkaa ilmoitusta</h1>
+  <form action="/update_message" method="post">
+    <p>
+      Otsikko: <br />
+      <input type="text" name="title" value="{{ message.title }}" maxlength="50" required />
+    </p>
+    <p>
+      Kuvaus: <br />
+      <textarea name="description" rows="8" cols="60" maxlength="1000" required >{{ item.description }}</textarea>
+    </p>
+    <input type="hidden" name="message_id" value="{{ message.id }}" />
+        {% for class in all_classes %}
+    <p>
+     {{ class }}: <br />
+     <select name="classes">
+      <option value="">(valitse)</option>
+     {% for option in all_classes[class] %}
+      {% if classes[class] == option %}
+       <option value="{{ class }}:{{ option }}"selected>{{ option }}</option>
+       {% else %}
+      <option value="{{ class }}:{{ option }}">{{ option }}</option>
+       {% endif %}
+     {% endfor %}
+     </select>
+    </p>
+    {% endfor %}
+    <input type="submit" value="Päivitä ilmoitusta" />
+  </form>
+</body>
+
+</html>

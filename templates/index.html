@@ -31,12 +31,14 @@
    </p>
    
    <h2>Ilmoitukset</h2>
-   
-   <ul>
-     {% for message in messages %}
-     <li><a href="/message/{{ message.id }}">{{ message.title }}</a></li>
-     {% endfor %}
-   </ul>
+<ul>
+  {% for message in messages %}
+  <li>
+    <a href="/message/{{ message.id }}">{{ message.title }} | {{ message.name }} | {{ message.age }}</a>
+  </li>
+  {% endfor %}
+</ul>
+
 </body>
 
 </html>

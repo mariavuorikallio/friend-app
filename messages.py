@@ -27,7 +27,14 @@ def get_classes(message_id):
     return db.query(sql, [message_id])  
     
 def get_messages():
-    sql = "SELECT id, title FROM messages ORDER BY id DESC"
+    sql = """SELECT messages.id,
+                    messages.title,
+                    messages.description,
+                    messages.age,
+                    users.username AS name
+             FROM messages
+             JOIN users ON messages.user_id = users.id
+             ORDER BY messages.id DESC"""
     return db.query(sql)
 
 def get_user_messages(user_id):
