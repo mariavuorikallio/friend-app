@@ -19,15 +19,22 @@
     <a href="/">Takaisin</a>
   </p>
 
-  {% if query %}
- <h2>Tulokset</h2>
- 
- <ul>
-  {% for message in results %}
-  <li><a href="/message/{{ message.id }}">{{ message.title }}</a></li>
-  {% endfor %}
- </ul>
- {% endif %}
+<h2>Tulokset</h2>
+
+{% if query %}
+    {% if results %}
+        <ul>
+        {% for message in results %}
+            <li><a href="/message/{{ message.id }}">{{ message.title }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Ei löytynyt mitään!</p>
+    {% endif %}
+{% else %}
+    <p>Kirjoita hakusana nähdäksesi tulokset.</p>
+{% endif %}
+
 </body>
 
 </html>
