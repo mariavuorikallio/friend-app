@@ -1,24 +1,36 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="fi">
 <head>
-  <title> {{ user.username }}</title>
+    <meta charset="UTF-8">
+    <title>Käyttäjä {{ user.username }}</title>
 </head>
-
 <body>
-  <h1> {{ user.username }}</h1>
-  <p>
-   Käyttäjällä on yhteensä {{ messages | count }} ilmoitusta.
-  </p>
-  <h2>Ilmoitukset</h2>
-  <ul>
-   {% for message in messages %}
-   <li><a href="/message/{{ message.id }}">{{ message.title }}</a></li>
-    {% endfor %}
-   </ul>
-  <p>
-   <a href="/">Takaisin</a>
- </p>
-</body>
+    <h1>Käyttäjä: {{ user.username }}</h1>
 
+    {% if user.has_image %}
+        <p>Profiilikuva:</p>
+        <img src="/image/{{ user.id }}" alt="Profiilikuva" style="max-width: 200px; max-height: 200px;">
+    {% else %}
+        <p>Käyttäjällä ei ole profiilikuvaa.</p>
+    {% endif %}
+
+    <h2>Viestit:</h2>
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>
+                <a href="/message/{{ message.id }}">{{ message.title }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Käyttäjällä ei ole viestejä.</p>
+    {% endif %}
+
+<p><a href="/">Takaisin etusivulle</a></p>
+{% if session.user_id == user.id %}
+    <p><a href="/add_image">Lisää / muuta profiilikuvaa</a></p>
+{% endif %}
+</body>
 </html>
+
