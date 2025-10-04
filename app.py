@@ -11,6 +11,7 @@ import config
 import forum
 import messages
 import users
+import threads  
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -58,7 +59,7 @@ def add_image():
         return "VIRHE: väärä tiedostomuoto"
 
     image = file.read()
-    if len(image) > 100 * 1024:  
+    if len(image) > 100 * 1024:
         return "VIRHE: liian suuri kuva"
 
     user_id = session["user_id"]
@@ -284,5 +285,56 @@ def logout():
         del session["user_id"]
         del session["username"]
     return redirect("/")
+
+
+@app.route("/start_thread/<int:message_id>")
+def start_thread(message_id):
+    """Aloittaa keskustelun ilmoituksen tekijän kanssa."""
+    require_login()
+    user_id = session["user_id"]
+
+    msg = messages.get_message(message_id)
+    if not msg:
+        abort(404)
+
+    owner_id = msg["user_id"]
+    if owner_id == user_id:
+        return "Et voi aloittaa keskustelua itsesi kanssa", 403
+
+    thread_id = threads.get_or_create_thread(message_id, user_id, owner_id)
+    return redirect(f"/thread/{thread_id}")
+
+
+@app.route("/thread/<int:thread_id>")
+def show_thread(thread_id):
+    """Näyttää keskustelun viestit."""
+    require_login()
+    user_id = session["user_id"]
+    msgs = threads.get_messages(thread_id)
+    return render_template("thread.html", messages=msgs, thread_id=thread_id, user_id=user_id)
+
+
+@app.route("/send_message", methods=["POST"])
+def send_message():
+    """Lähettää viestin keskustelussa."""
+    require_login()
+    check_csrf()
+    thread_id = request.form["thread_id"]
+    content = request.form["content"]
+    if not content.strip():
+        return redirect(f"/thread/{thread_id}")
+
+    threads.send_message(thread_id, session["user_id"], content)
+    return redirect(f"/thread/{thread_id}")
+
+
+@app.route("/threads")
+def user_threads():
+    """Näyttää käyttäjän kaikki keskustelut."""
+    require_login()
+    user_id = session["user_id"]
+    thread_list = threads.get_user_threads(user_id)
+    return render_template("threads.html", threads=thread_list)
+
 
 

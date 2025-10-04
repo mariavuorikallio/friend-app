@@ -47,12 +47,15 @@
 {% endif %}
 
 {% if session.user_id %}
-  <h3>Lisää vastaus</h3>
-  <form action="/new_reply" method="post">
-    <textarea name="content" rows="4" cols="50"></textarea><br>
-    <input type="hidden" name="message_id" value="{{ message.id }}">
-    <input type="submit" value="Lähetä">
-  </form>
+  {% if session.user_id != message.user_id %}
+    <form action="/start_thread/{{ message.id }}" method="get">
+      <input type="submit" value="Aloita keskustelu käyttäjän kanssa">
+    </form>
+  {% else %}
+    <p>Tämä on oma ilmoituksesi.</p>
+  {% endif %}
+{% else %}
+  <p><a href="/login">Kirjaudu sisään</a> aloittaaksesi keskustelun.</p>
 {% endif %}
 
 <p>

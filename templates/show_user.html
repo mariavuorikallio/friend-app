@@ -14,7 +14,10 @@
         <p>Käyttäjällä ei ole profiilikuvaa.</p>
     {% endif %}
 
-    <h2>Viestit:</h2>
+    <h2>Ilmoitukset:</h2> 
+    <p>
+    Käyttäjä on lähettänyt {{ messages | count }} ilmoitusta
+    </p>
     {% if messages %}
         <ul>
         {% for message in messages %}
@@ -24,7 +27,7 @@
         {% endfor %}
         </ul>
     {% else %}
-        <p>Käyttäjällä ei ole viestejä.</p>
+        <p>Käyttäjällä ei ole ilmoituksia.</p>
     {% endif %}
 
 <p><a href="/">Takaisin etusivulle</a></p>

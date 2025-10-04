@@ -1,0 +1,14 @@
+<h1>Omat keskustelut</h1>
+
+<ul>
+  {% for t in threads %}
+    <li>
+      <a href="{{ url_for('show_thread', thread_id=t.id) }}">
+        Keskustelu käyttäjän {{ t.partner }} kanssa ({{ t.ad_title }})
+      </a>
+    </li>
+  {% else %}
+    <li>Ei vielä keskusteluja.</li>
+  {% endfor %}
+</ul>
+

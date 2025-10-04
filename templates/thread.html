@@ -1,0 +1,18 @@
+<h2>Keskustelu</h2>
+
+<div class="chat-box">
+  {% for msg in messages %}
+    <div class="msg {% if msg.sender_id == user_id %}sent{% else %}received{% endif %}">
+      <p>{{ msg.content }}</p>
+      <small>{{ msg.created_at }}</small>
+    </div>
+  {% endfor %}
+</div>
+
+<form action="{{ url_for('send_message') }}" method="post">
+  <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+  <input type="hidden" name="thread_id" value="{{ thread_id }}">
+  <textarea name="content" placeholder="Kirjoita viesti..." required></textarea>
+  <button type="submit">Lähetä</button>
+</form>
+
