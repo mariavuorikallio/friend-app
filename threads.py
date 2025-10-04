@@ -15,9 +15,13 @@ def get_or_create_thread(ad_id, user1_id, user2_id):
 
 def get_messages(thread_id):
     """Palauttaa keskustelun viestit aikajärjestyksessä."""
-    sql = """SELECT sender_id, content, created_at FROM thread_messages
-             WHERE thread_id = ?
-             ORDER BY created_at"""
+    sql = """
+    SELECT tm.sender_id, u.username AS sender_name, tm.content, tm.created_at
+    FROM thread_messages tm
+    JOIN users u ON tm.sender_id = u.id
+    WHERE tm.thread_id = ?
+    ORDER BY tm.created_at
+    """
     return db.query(sql, [thread_id])
 
 
