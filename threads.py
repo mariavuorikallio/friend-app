@@ -37,3 +37,14 @@ def get_user_threads(user_id):
              ORDER BY t.created_at DESC"""
     return db.query(sql, [user_id, user_id, user_id])
 
+
+def get_threads_by_message(ad_id):
+    """Palauttaa kaikki threadit, jotka liittyvät tiettyyn ilmoitukseen/viestiin."""
+    sql = """SELECT t.id, t.user1_id, t.user2_id, u1.username AS user1_name, u2.username AS user2_name
+             FROM threads t
+             JOIN users u1 ON t.user1_id = u1.id
+             JOIN users u2 ON t.user2_id = u2.id
+             WHERE t.ad_id = ?
+             ORDER BY t.created_at DESC"""
+    return db.query(sql, [ad_id])
+

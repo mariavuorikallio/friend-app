@@ -89,27 +89,24 @@ def find_message():
 
 @app.route("/message/<int:message_id>")
 def show_message(message_id):
-    """Näyttää yksittäisen viestin ja siihen liittyvät foorumiviestit."""
+    """Näyttää yksittäisen viestin ja siihen liittyvät threadit."""
     message = messages.get_message(message_id)
     if not message:
         abort(404)
 
     classes_list = messages.get_classes(message_id)
-    forum_messages = []
     user_id = session.get("user_id")
 
+    threads_list = []
     if user_id:
-        all_forum_messages = forum.get_forum_messages(message_id)
-        authorized_users = {message["user_id"]}
-        authorized_users.update([f["user_id"] for f in all_forum_messages])
-        if user_id in authorized_users:
-            forum_messages = all_forum_messages
+        if user_id == message["user_id"]:
+            threads_list = threads.get_threads_by_message(message_id)
 
     return render_template(
         "show_message.html",
         message=message,
         classes=classes_list,
-        forum=forum_messages,
+        threads=threads_list
     )
 
 
