@@ -1,5 +1,5 @@
 """
-Tämä moduuli sisältää käyttäjiin liittyvät funktiot ja tietokantakyselyt.
+This module contains functions and database queries related to users.
 """
 
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -7,7 +7,7 @@ import db
 
 
 def get_user(user_id):
-    """Palauttaa käyttäjän tiedot käyttäjä-ID:n perusteella, mukaan lukien tieto profiilikuvasta."""
+    """Returns user information by user ID, including whether the user has a profile image."""
     sql = """SELECT id, username, image IS NOT NULL AS has_image
              FROM users
              WHERE id = ?"""
@@ -16,13 +16,13 @@ def get_user(user_id):
 
 
 def get_messages(user_id): 
-    """Palauttaa käyttäjän viestit.""" 
+    """Returns the messages of a user.""" 
     sql = "SELECT id, title FROM messages WHERE user_id = ? ORDER BY id DESC" 
     return db.query(sql, [user_id])
 
 
 def create_user(username, password):
-    """Luo uuden käyttäjän ja hashkaa salasanan."""
+    """Creates a new user and hashes the password."""
     password_hash = generate_password_hash(password)
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
     user_id = db.execute(sql, [username, password_hash])
@@ -30,7 +30,7 @@ def create_user(username, password):
 
 
 def check_login(username, password):
-    """Tarkistaa käyttäjän kirjautumistiedot."""
+    """Verifies a user's login credentials."""
     sql = "SELECT id, password_hash FROM users WHERE username = ?"
     result = db.query(sql, [username])
     if not result:
@@ -44,15 +44,14 @@ def check_login(username, password):
 
 
 def update_image(user_id, image):
-    """Tallentaa käyttäjän profiilikuvan tietokantaan."""
+    """Saves the user's profile image to the database."""
     sql = "UPDATE users SET image = ? WHERE id = ?"
     db.execute(sql, [image, user_id])
 
 
 def get_image(user_id):
-    """Hakee käyttäjän profiilikuvan tietokannasta."""
+    """Retrieves the user's profile image from the database."""
     sql = "SELECT image FROM users WHERE id = ?"
     result = db.query(sql, [user_id])
     return result[0]["image"] if result else None
-
 

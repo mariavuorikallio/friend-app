@@ -1,7 +1,7 @@
 import db
 
 def get_or_create_thread(ad_id, user1_id, user2_id):
-    """Palauttaa olemassa olevan keskustelun tai luo uuden."""
+    """Returns an existing thread or creates a new one."""
     sql = """SELECT id FROM threads 
              WHERE ad_id = ? 
                AND ((user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?))"""
@@ -14,7 +14,7 @@ def get_or_create_thread(ad_id, user1_id, user2_id):
 
 
 def get_messages(thread_id):
-    """Palauttaa keskustelun viestit aikajärjestyksessä."""
+    """Returns the messages of a thread in chronological order."""
     sql = """
     SELECT tm.sender_id, u.username AS sender_name, tm.content, tm.created_at
     FROM thread_messages tm
@@ -26,13 +26,13 @@ def get_messages(thread_id):
 
 
 def send_message(thread_id, sender_id, content):
-    """Lisää viestin keskusteluun."""
+    """Adds a message to a thread."""
     sql = "INSERT INTO thread_messages (thread_id, sender_id, content) VALUES (?, ?, ?)"
     db.execute(sql, [thread_id, sender_id, content])
 
 
 def get_user_threads(user_id):
-    """Hakee kaikki keskustelut, joissa käyttäjä on osallisena."""
+    """Retrieves all threads in which the user participates."""
     sql = """SELECT t.id, t.ad_id, m.title AS ad_title, u.username AS partner
              FROM threads t
              JOIN messages m ON t.ad_id = m.id
@@ -43,7 +43,7 @@ def get_user_threads(user_id):
 
 
 def get_threads_by_message(ad_id):
-    """Palauttaa kaikki threadit, jotka liittyvät tiettyyn ilmoitukseen/viestiin."""
+    """Returns all threads related to a specific ad/message."""
     sql = """SELECT t.id, t.user1_id, t.user2_id, u1.username AS user1_name, u2.username AS user2_name
              FROM threads t
              JOIN users u1 ON t.user1_id = u1.id
@@ -51,4 +51,5 @@ def get_threads_by_message(ad_id):
              WHERE t.ad_id = ?
              ORDER BY t.created_at DESC"""
     return db.query(sql, [ad_id])
+
 

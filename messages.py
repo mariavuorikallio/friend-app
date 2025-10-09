@@ -1,12 +1,12 @@
 """
-Tämä moduuli sisältää viestien käsittelyyn liittyvät funktiot.
+This module contains functions related to message handling.
 """
 
 import db
 
 
 def get_all_classes():
-    """Palauttaa kaikki luokat tietokannasta sanakirjana."""
+    """Returns all classes from the database as a dictionary."""
     sql = "SELECT title, value FROM classes ORDER BY id"
     result = db.query(sql)
 
@@ -20,7 +20,7 @@ def get_all_classes():
 
 
 def add_message(message_title, description, age, user_id, classes):
-    """Lisää uuden viestin tietokantaan ja liittää siihen luokat."""
+    """Adds a new message to the database and associates it with classes."""
     sql = """INSERT INTO messages (title, description, age, user_id) VALUES (?, ?, ?, ?)"""
     db.execute(sql, [message_title, description, age, user_id])
 
@@ -32,13 +32,13 @@ def add_message(message_title, description, age, user_id, classes):
 
 
 def get_classes(message_id):
-    """Palauttaa viestin luokat listana sanakirjoja."""
+    """Returns the classes of a message as a list of dictionaries."""
     sql = "SELECT title, value FROM message_classes WHERE message_id = ?"
     return db.query(sql, [message_id])
 
 
 def get_messages():
-    """Palauttaa kaikki viestit käyttäjätiedoilla."""
+    """Returns all messages with user information."""
     sql = """SELECT messages.id,
                     messages.title,
                     messages.description,
@@ -51,7 +51,7 @@ def get_messages():
 
 
 def get_user_messages(user_id):
-    """Palauttaa käyttäjän viestit ID:n ja otsikon perusteella."""
+    """Returns the user's messages with ID and title."""
     sql = """SELECT DISTINCT m.id, m.title
              FROM messages m
              JOIN replies r ON r.message_id = m.id
@@ -61,7 +61,7 @@ def get_user_messages(user_id):
 
 
 def get_message(message_id):
-    """Palauttaa yksittäisen viestin tiedot."""
+    """Returns the details of a single message."""
     sql = """SELECT messages.id,
                     messages.title,
                     messages.description,
@@ -76,7 +76,7 @@ def get_message(message_id):
 
 
 def update_message(message_id, message_title, description, classes):
-    """Päivittää viestin tiedot ja siihen liittyvät luokat."""
+    """Updates a message's details and its associated classes."""
     sql = """UPDATE messages SET title = ?, description = ? WHERE id = ?"""
     db.execute(sql, [message_title, description, message_id])
 
@@ -89,7 +89,7 @@ def update_message(message_id, message_title, description, classes):
 
 
 def remove_message(message_id):
-    """Poistaa viestin ja siihen liittyvät luokat tietokannasta."""
+    """Deletes a message and its associated classes from the database."""
     sql = "DELETE FROM message_classes WHERE message_id = ?"
     db.execute(sql, [message_id])
     sql = "DELETE FROM messages WHERE id = ?"
@@ -97,13 +97,14 @@ def remove_message(message_id):
 
 
 def find_messages(query):
-    """Hakee viestejä otsikon tai kuvauksen perusteella."""
+    """Searches for messages by title or description."""
     sql = """SELECT id, title
              FROM messages
              WHERE title LIKE ? OR description LIKE ?
              ORDER BY id DESC"""
     like = "%" + query + "%"
     return db.query(sql, [like, like])
+
 
 
             

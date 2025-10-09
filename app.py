@@ -1,5 +1,5 @@
 """
-Tämä moduuli sisältää Friend App -sovelluksen päälogiikan.
+This module contains the main logic of the Friend App application.
 """
 
 import re
@@ -18,27 +18,27 @@ app.secret_key = config.secret_key
 
 
 def check_csrf():
-    """Tarkistaa CSRF-tokenin."""
+    """Checks the CSRF token."""
     if request.form.get("csrf_token") != session.get("csrf_token"):
         abort(403)
 
 
 def require_login():
-    """Varmistaa, että käyttäjä on kirjautunut sisään."""
+    """Ensures that the user is logged in."""
     if "user_id" not in session:
         abort(403)
 
 
 @app.route("/")
 def index():
-    """Näyttää etusivun viestit."""
+    """Displays the homepage messages."""
     all_messages = messages.get_messages()
     return render_template("index.html", messages=all_messages)
 
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
-    """Näyttää käyttäjän profiilin ja viestit."""
+    """Displays the user's profile and messages."""
     user = users.get_user(user_id)
     if not user:
         abort(404)
@@ -48,7 +48,7 @@ def show_user(user_id):
 
 @app.route("/add_image", methods=["GET", "POST"])
 def add_image():
-    """Mahdollistaa profiilikuvan lisäämisen."""
+    """Allows the user to add a profile image."""
     require_login()
 
     if request.method == "GET":
@@ -56,11 +56,11 @@ def add_image():
 
     file = request.files["image"]
     if not file.filename.endswith(".jpg"):
-        return "VIRHE: väärä tiedostomuoto"
+        return "ERROR: wrong file format"
 
     image = file.read()
     if len(image) > 100 * 1024:
-        return "VIRHE: liian suuri kuva"
+        return "ERROR: image too large"
 
     user_id = session["user_id"]
     users.update_image(user_id, image)
@@ -69,7 +69,7 @@ def add_image():
 
 @app.route("/image/<int:user_id>")
 def show_image(user_id):
-    """Näyttää käyttäjän profiilikuvan."""
+    """Displays the user's profile image."""
     image = users.get_image(user_id)
     if not image:
         abort(404)
@@ -81,7 +81,7 @@ def show_image(user_id):
 
 @app.route("/find_message")
 def find_message():
-    """Hakee viestejä hakusanan perusteella."""
+    """Searches messages by a query string."""
     query = request.args.get("query")
     results = messages.find_messages(query) if query else []
     return render_template("find_message.html", query=query or "", results=results)
@@ -89,7 +89,7 @@ def find_message():
 
 @app.route("/message/<int:message_id>")
 def show_message(message_id):
-    """Näyttää yksittäisen viestin ja siihen liittyvät threadit."""
+    """Displays a single message and its related threads."""
     message = messages.get_message(message_id)
     if not message:
         abort(404)
@@ -112,7 +112,7 @@ def show_message(message_id):
 
 @app.route("/new_message")
 def new_message():
-    """Näyttää uuden viestin lomakkeen."""
+    """Displays the form to create a new message."""
     require_login()
     classes_list = messages.get_all_classes()
     return render_template("new_message.html", classes=classes_list)
@@ -120,7 +120,7 @@ def new_message():
 
 @app.route("/create_message", methods=["POST"])
 def create_message():
-    """Luo uuden viestin."""
+    """Creates a new message."""
     require_login()
     check_csrf()
 
@@ -155,7 +155,7 @@ def create_message():
 
 @app.route("/edit_message/<int:message_id>")
 def edit_message(message_id):
-    """Näyttää viestin muokkauslomakkeen."""
+    """Displays the edit form for a message."""
     require_login()
     message = messages.get_message(message_id)
     if not message:
@@ -178,7 +178,7 @@ def edit_message(message_id):
 
 @app.route("/update_message", methods=["POST"])
 def update_message():
-    """Päivittää olemassa olevan viestin."""
+    """Updates an existing message."""
     require_login()
     check_csrf()
     message_id = request.form["message_id"]
@@ -213,7 +213,7 @@ def update_message():
 
 @app.route("/remove_message/<int:message_id>", methods=["GET", "POST"])
 def remove_message(message_id):
-    """Poistaa viestin tai näyttää poiston vahvistuslomakkeen."""
+    """Deletes a message or displays a confirmation form."""
     require_login()
     message = messages.get_message(message_id)
     if not message:
@@ -233,23 +233,23 @@ def remove_message(message_id):
 
 @app.route("/register")
 def register():
-    """Näyttää rekisteröitymislomakkeen."""
+    """Displays the registration form."""
     return render_template("register.html")
 
 
 @app.route("/create", methods=["POST"])
 def create():
-    """Luo uuden käyttäjän."""
+    """Creates a new user."""
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
+        return "ERROR: passwords do not match"
 
     try:
         user_id = users.create_user(username, password1)
     except sqlite3.IntegrityError:
-        return "VIRHE: tunnus on jo varattu"
+        return "ERROR: username already taken"
 
     session["user_id"] = user_id
     session["username"] = username
@@ -259,7 +259,7 @@ def create():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Kirjautuminen käyttäjänä."""
+    """Logs in a user."""
     if request.method == "GET":
         return render_template("login.html")
 
@@ -272,12 +272,12 @@ def login():
         session["username"] = username
         session["csrf_token"] = secrets.token_hex(16)
         return redirect("/")
-    return "VIRHE: väärä tunnus tai salasana"
+    return "ERROR: invalid username or password"
 
 
 @app.route("/logout")
 def logout():
-    """Kirjaa käyttäjän ulos."""
+    """Logs out the user."""
     if "user_id" in session:
         del session["user_id"]
         del session["username"]
@@ -286,7 +286,7 @@ def logout():
 
 @app.route("/start_thread/<int:message_id>")
 def start_thread(message_id):
-    """Aloittaa keskustelun ilmoituksen tekijän kanssa."""
+    """Starts a conversation with the ad/message owner."""
     require_login()
     user_id = session["user_id"]
 
@@ -296,7 +296,7 @@ def start_thread(message_id):
 
     owner_id = msg["user_id"]
     if owner_id == user_id:
-        return "Et voi aloittaa keskustelua itsesi kanssa", 403
+        return "You cannot start a thread with yourself", 403
 
     thread_id = threads.get_or_create_thread(message_id, user_id, owner_id)
     return redirect(f"/thread/{thread_id}")
@@ -304,7 +304,7 @@ def start_thread(message_id):
 
 @app.route("/thread/<int:thread_id>")
 def show_thread(thread_id):
-    """Näyttää keskustelun viestit."""
+    """Displays the messages of a thread."""
     require_login()
     user_id = session["user_id"]
     msgs = threads.get_messages(thread_id)
@@ -313,7 +313,7 @@ def show_thread(thread_id):
 
 @app.route("/send_message", methods=["POST"])
 def send_message():
-    """Lähettää viestin keskustelussa."""
+    """Sends a message in a thread."""
     require_login()
     check_csrf()
     thread_id = request.form["thread_id"]
@@ -327,11 +327,12 @@ def send_message():
 
 @app.route("/threads")
 def user_threads():
-    """Näyttää käyttäjän kaikki keskustelut."""
+    """Displays all threads of the user."""
     require_login()
     user_id = session["user_id"]
     thread_list = threads.get_user_threads(user_id)
     return render_template("threads.html", threads=thread_list)
+
 
 
 
