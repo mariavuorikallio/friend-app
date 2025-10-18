@@ -1,40 +1,35 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Etsi ilmoitus</title>
-</head>
+{% block title %}Etsi ilmoitus{% endblock %}
 
-<body>
-  <h1>Etsi ilmoitus</h1>
-  
-  <form action="/find_message" method="get">
-   <p>
-   Hakusana: <input type="text" name="query" value="{{ query }}">
-  </p>
-   <input type="submit" value="Etsi">
-  </form>
-  
+{% block content %}
+<h1>Etsi ilmoitus</h1>
+
+<form action="/find_message" method="get">
   <p>
-    <a href="/">Takaisin</a>
+    Hakusana: <input type="text" name="query" value="{{ query }}">
   </p>
+  <input type="submit" value="Etsi">
+</form>
+
+<p>
+  <a href="/">Takaisin</a>
+</p>
 
 <h2>Tulokset</h2>
 
 {% if query %}
-    {% if results %}
-        <ul>
-        {% for message in results %}
-            <li><a href="/message/{{ message.id }}">{{ message.title }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>Ei löytynyt mitään!</p>
-    {% endif %}
+  {% if results %}
+    <ul>
+      {% for message in results %}
+        <li><a href="/message/{{ message.id }}">{{ message.title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Ei löytynyt mitään!</p>
+  {% endif %}
 {% else %}
-    <p>Kirjoita hakusana nähdäksesi tulokset.</p>
+  <p>Kirjoita hakusana nähdäksesi tulokset.</p>
 {% endif %}
+{% endblock %}
 
-</body>
-
-</html>

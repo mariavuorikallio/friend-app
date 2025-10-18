@@ -1,44 +1,32 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Friend App</title>
-</head>
+{% block title %}Friend App{% endblock %}
 
-<body>
-  <h1>Friend App</h1>
-  
-  {% if session.username %}
+{% block content %}
+{% if session.username %}
+  <p>Olet kirjautunut nimellä <strong>{{ session.username }}</strong>. Tervetuloa!</p>
   <p>
-    Olet kirjautunut nimellä {{ session.username }}
-  </p>
-  <p>
+    <a href="/new_message">Uusi ilmoitus</a> |
     <a href="/logout">Kirjaudu ulos</a>
   </p>
+{% else %}
   <p>
-    <a href="new_message">Uusi ilmoitus</a>
-  </p>
-  {% else %}
-  <p>
-    <a href="/login">Kirjaudu sisään</a>
+    <a href="/login">Kirjaudu sisään</a> |
     <a href="/register">Luo tunnus</a>
   </p>
-  {% endif %}
-  
-  <p>
-    <a href="find_message">Etsi ilmoitus</a>
-  </p>
-   
-  <h2>Ilmoitukset</h2>
-  <ul>
-    {% for message in messages %}
-    <li>
-      <a href="/message/{{ message.id }}">{{ message.title }} | {{ message.name }} | {{ message.age }}</a>
-    </li>
-    {% endfor %}
-  </ul>
+{% endif %}
 
-</body>
+<p><a href="/find_message">Etsi ilmoitus</a></p>
 
-</html>
+<h2>Ilmoitukset</h2>
+<ul>
+  {% for message in messages %}
+  <li>
+    <a href="/message/{{ message.id }}">{{ message.title }} | {{ message.name }} | {{ message.age }}</a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
+
+
 

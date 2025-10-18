@@ -201,8 +201,9 @@ def update_message():
             if class_title not in all_classes or class_value not in all_classes[class_title]:
                 abort(403)
             classes_selected.append((class_title, class_value))
-
-    messages.update_message(message_id, title, description, classes_selected)
+    
+    user_id = session["user_id"]
+    messages.update_message(message_id, user_id, title, description, classes_selected)
     return redirect(f"/message/{message_id}")
 
 

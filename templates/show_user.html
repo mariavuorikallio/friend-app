@@ -1,39 +1,34 @@
-<!DOCTYPE html>
-<html lang="fi">
-<head>
-    <meta charset="UTF-8">
-    <title>Käyttäjä {{ user.username }}</title>
-</head>
-<body>
-    <h1>Käyttäjä: {{ user.username }}</h1>
+{% extends "layout.html" %}
 
-    {% if user.has_image %}
-        <p>Profiilikuva:</p>
-        <img src="/image/{{ user.id }}" alt="Profiilikuva" style="max-width: 200px; max-height: 200px;">
-    {% else %}
-        <p>Käyttäjällä ei ole profiilikuvaa.</p>
-    {% endif %}
+{% block title %}Käyttäjä {{ user.username }}{% endblock %}
 
-    <h2>Ilmoitukset:</h2> 
-    <p>
-    Käyttäjä on lähettänyt {{ messages | count }} ilmoitusta
-    </p>
-    {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li>
-                <a href="/message/{{ message.id }}">{{ message.title }}</a>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>Käyttäjällä ei ole ilmoituksia.</p>
-    {% endif %}
+{% block content %}
+<h1>Käyttäjä: {{ user.username }}</h1>
+
+{% if user.has_image %}
+  <p>Profiilikuva:</p>
+  <img src="/image/{{ user.id }}" alt="Profiilikuva" style="max-width: 200px; max-height: 200px;">
+{% else %}
+  <p>Käyttäjällä ei ole profiilikuvaa.</p>
+{% endif %}
+
+<h2>Ilmoitukset:</h2>
+<p>Käyttäjä on lähettänyt {{ messages | length }} ilmoitusta</p>
+
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li><a href="/message/{{ message.id }}">{{ message.title }}</a></li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Käyttäjällä ei ole ilmoituksia.</p>
+{% endif %}
 
 <p><a href="/">Takaisin etusivulle</a></p>
+
 {% if session.user_id == user.id %}
-    <p><a href="/add_image">Lisää / muuta profiilikuvaa</a></p>
+  <p><a href="/add_image">Lisää / muuta profiilikuvaa</a></p>
 {% endif %}
-</body>
-</html>
+{% endblock %}
 

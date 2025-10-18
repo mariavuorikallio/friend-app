@@ -1,17 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Kirjautuminen</title>
-</head>
-<body>
-  {% if session.username %}
+{% extends "layout.html" %}
+
+{% block title %}Kirjautuminen{% endblock %}
+
+{% block content %}
+{% if session.username %}
   <p>
     Olet kirjautunut nimellä {{ session.username }}
   </p>
   <p>
     <a href="/logout">Kirjaudu ulos</a>
   </p>
-  {% else %}
+{% else %}
   <form action="/login" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <p>
@@ -27,8 +26,7 @@
   <p>
     Eikö sinulla ole tunnusta? <a href="/register">Rekisteröidy tästä</a>
   </p>
-  {% endif %}
-</body>
-</html>
+{% endif %}
+{% endblock %}
 
 
