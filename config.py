@@ -1,2 +1,5 @@
-secret_key = "18fd24bf6a2ad4dac04a33963db1c42f"
+import os
+
+secret_key = os.getenv("SECRET_KEY", "dev-secret")
+database_url = os.getenv("DATABASE_URL", "database.db")
 
