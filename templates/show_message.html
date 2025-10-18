@@ -15,10 +15,10 @@
     </p>
   {% endif %}
 
-  <p>{{ message.description }}</p>
+  <p>{{ message.description | replace('\n', '<br>') | safe }}</p>
   <p>Ikä: {{ message.age }} vuotta</p>
   <p>
-    Käyttäjä: 
+    Käyttäjä:
     {% if session.user_id %}
       <a href="/user/{{ message.user_id }}">{{ message.username }}</a>
     {% else %}
@@ -59,7 +59,6 @@
       {% endif %}
     {% endif %}
   {% else %}
-
     <p><a href="/login">Kirjaudu lähettääksesi viesti käyttäjälle</a></p>
   {% endif %}
 
