@@ -48,7 +48,10 @@ def show_user(user_id):
     if not user:
         abort(404)
     user_messages = users.get_messages(user_id)
-    return render_template("show_user.html", user=user, messages=user_messages)
+    
+    back_to = request.args.get("from", "/") 
+
+    return render_template("show_user.html", user=user, messages=user_messages, previous_page=back_to)
 
 
 @app.route("/add_image", methods=["GET", "POST"])
@@ -86,6 +89,7 @@ def show_image(user_id):
 
 @app.route("/edit_profile", methods=["GET", "POST"])
 def edit_profile():
+    """Allows a logged-in user to update their profile info and image."""
     require_login()
     user_id = session["user_id"]
     user = users.get_user(user_id)
@@ -99,16 +103,15 @@ def edit_profile():
 
     age = request.form.get("age")
     bio = request.form.get("bio")
-    if age:
-        try:
-            age = int(age)
-        except ValueError:
-            age = None
+    try:
+        age = int(age) if age else None
+    except ValueError:
+        age = None
 
     file = request.files.get("image")
     if file and file.filename.endswith(".jpg"):
         image = file.read()
-        if len(image) <= 100 * 1024:  # max 100kb
+        if len(image) <= 100 * 1024:
             users.update_image(user_id, image)
 
     users.update_profile(user_id, age, bio)
@@ -271,7 +274,7 @@ def register():
 
 @app.route("/create", methods=["POST"])
 def create():
-    """Creates a new user."""
+    """Creates a new user with optional age and bio."""
     check_csrf()
 
     username = request.form["username"]
@@ -279,15 +282,19 @@ def create():
     password2 = request.form["password2"]
     if password1 != password2:
         return "ERROR: passwords do not match"
-        
+
     age = request.form.get("age")
     bio = request.form.get("bio")
 
-    age = int(age) if age else None
-    bio = bio if bio else None
+    try:
+        age = int(age) if age else None
+    except ValueError:
+        age = None
+
+    bio = bio.strip() if bio else None
 
     try:
-        user_id = users.create_user(username, password1)
+        user_id = users.create_user(username, password1, age, bio)
     except sqlite3.IntegrityError:
         return "ERROR: username already taken"
 
@@ -303,7 +310,7 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
 
-    check_csrf()  # <--- Lisätty CSRF-tarkistus
+    check_csrf()  
 
     username = request.form["username"]
     password = request.form["password"]

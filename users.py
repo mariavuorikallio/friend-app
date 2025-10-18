@@ -22,7 +22,7 @@ def get_messages(user_id):
 
 
 def create_user(username, password, age=None, bio=None):
-    """Creates a new user and hashes the password. Age and bio are optional."""
+    """Creates a new user and hashes the password."""
     password_hash = generate_password_hash(password)
     sql = "INSERT INTO users (username, password_hash, age, bio) VALUES (?, ?, ?, ?)"
     user_id = db.execute(sql, [username, password_hash, age, bio])

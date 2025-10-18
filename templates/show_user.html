@@ -3,32 +3,25 @@
 {% block title %}Käyttäjä {{ user.username }}{% endblock %}
 
 {% block content %}
-<h1>Käyttäjä: {{ user.username }}</h1>
+<h2>Käyttäjä: {{ user.username }}</h2>
 
 {% if user.has_image %}
-  <p>Profiilikuva:</p>
-  <img src="/image/{{ user.id }}" alt="Profiilikuva" style="max-width: 200px; max-height: 200px;">
+    <p>Profiilikuva:</p>
+    <img src="/image/{{ user.id }}" alt="Profiilikuva" style="max-width: 200px; max-height: 200px;">
 {% else %}
-  <p>Käyttäjällä ei ole profiilikuvaa.</p>
+    <p>Käyttäjällä ei ole profiilikuvaa.</p>
 {% endif %}
 
-<h2>Ilmoitukset:</h2>
-<p>Käyttäjä on lähettänyt {{ messages | length }} ilmoitusta</p>
-
-{% if messages %}
-  <ul>
-    {% for message in messages %}
-      <li><a href="/message/{{ message.id }}">{{ message.title }}</a></li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>Käyttäjällä ei ole ilmoituksia.</p>
-{% endif %}
-
-<p><a href="/">Takaisin etusivulle</a></p>
+<p>Ikä: {{ user.age or 'Ei asetettu' }}</p>
+<p>Bio: {{ user.bio or 'Ei asetettu' }}</p>
 
 {% if session.user_id == user.id %}
-  <p><a href="/add_image">Lisää / muuta profiilikuvaa</a></p>
+    <p><a href="/edit_profile">Muokkaa profiilia</a></p>
 {% endif %}
+
+<hr>
+
+<p><a href="{{ previous_page }}">Takaisin</a></p>
+
 {% endblock %}
 
