@@ -8,7 +8,6 @@ import sqlite3
 from flask import Flask, abort, redirect, render_template, request, session, make_response
 
 import config
-import forum
 import messages
 import users
 import threads  

@@ -10,15 +10,14 @@
   
   {% if session.username %}
   <p>
-    Olet kirjautunut nimellä {{ session.username }}, id-numerosi on {{ session.user_id }}
+    Olet kirjautunut nimellä {{ session.username }}
   </p>
-    <p>
+  <p>
     <a href="/logout">Kirjaudu ulos</a>
   </p>
-  
   <p>
-   <a href="new_message">Uusi ilmoitus</a>
-   </p>
+    <a href="new_message">Uusi ilmoitus</a>
+  </p>
   {% else %}
   <p>
     <a href="/login">Kirjaudu sisään</a>
@@ -27,17 +26,17 @@
   {% endif %}
   
   <p>
-   <a href="find_message">Etsi ilmoitus</a>
-   </p>
+    <a href="find_message">Etsi ilmoitus</a>
+  </p>
    
-   <h2>Ilmoitukset</h2>
-<ul>
-  {% for message in messages %}
-  <li>
-    <a href="/message/{{ message.id }}">{{ message.title }} | {{ message.name }} | {{ message.age }}</a>
-  </li>
-  {% endfor %}
-</ul>
+  <h2>Ilmoitukset</h2>
+  <ul>
+    {% for message in messages %}
+    <li>
+      <a href="/message/{{ message.id }}">{{ message.title }} | {{ message.name }} | {{ message.age }}</a>
+    </li>
+    {% endfor %}
+  </ul>
 
 </body>
 
