@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <title>Rekisteröinti</title>
 </head>
-
 <body>
   <form action="/create" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <p>
       Tunnus: <br />
       <input type="text" name="username" />
@@ -25,6 +24,5 @@
     Onko sinulla jo tunnus? <a href="/login">Kirjaudu tästä</a>
   </p>
 </body>
-
 </html>
 

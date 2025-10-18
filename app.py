@@ -16,11 +16,17 @@ import threads
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+@app.before_request
+def ensure_csrf_token():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_hex(16)
+
 
 def check_csrf():
     """Checks the CSRF token."""
-    if request.form.get("csrf_token") != session.get("csrf_token"):
-        abort(403)
+    if request.method == "POST":
+        if request.form.get("csrf_token") != session.get("csrf_token"):
+            abort(403)
 
 
 def require_login():
@@ -50,10 +56,10 @@ def show_user(user_id):
 def add_image():
     """Allows the user to add a profile image."""
     require_login()
-
     if request.method == "GET":
         return render_template("add_image.html")
 
+    check_csrf()
     file = request.files["image"]
     if not file.filename.endswith(".jpg"):
         return "ERROR: wrong file format"
@@ -176,6 +182,7 @@ def update_message():
     """Updates an existing message."""
     require_login()
     check_csrf()
+
     message_id = request.form["message_id"]
     message = messages.get_message(message_id)
     if not message or message["user_id"] != session["user_id"]:
@@ -234,6 +241,8 @@ def register():
 @app.route("/create", methods=["POST"])
 def create():
     """Creates a new user."""
+    check_csrf()  # <--- Lisätty CSRF-tarkistus
+
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
@@ -256,6 +265,8 @@ def login():
     """Logs in a user."""
     if request.method == "GET":
         return render_template("login.html")
+
+    check_csrf()  # <--- Lisätty CSRF-tarkistus
 
     username = request.form["username"]
     password = request.form["password"]
