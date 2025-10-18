@@ -98,9 +98,8 @@ def show_message(message_id):
     user_id = session.get("user_id")
 
     threads_list = []
-    if user_id:
-        if user_id == message["user_id"]:
-            threads_list = threads.get_threads_by_message(message_id)
+    if user_id and user_id == message["user_id"]:
+        threads_list = threads.get_threads_by_message(message_id)
 
     return render_template(
         "show_message.html",
@@ -143,9 +142,7 @@ def create_message():
     for entry in request.form.getlist("classes"):
         if entry:
             class_title, class_value = entry.split(":")
-            if class_title not in all_classes:
-                abort(403)
-            if class_value not in all_classes[class_title]:
+            if class_title not in all_classes or class_value not in all_classes[class_title]:
                 abort(403)
             classes_selected.append((class_title, class_value))
 
@@ -158,9 +155,7 @@ def edit_message(message_id):
     """Displays the edit form for a message."""
     require_login()
     message = messages.get_message(message_id)
-    if not message:
-        abort(404)
-    if message["user_id"] != session["user_id"]:
+    if not message or message["user_id"] != session["user_id"]:
         abort(403)
 
     all_classes = messages.get_all_classes()
@@ -183,16 +178,12 @@ def update_message():
     check_csrf()
     message_id = request.form["message_id"]
     message = messages.get_message(message_id)
-    if not message:
-        abort(404)
-    if message["user_id"] != session["user_id"]:
+    if not message or message["user_id"] != session["user_id"]:
         abort(403)
 
     title = request.form["title"]
-    if not title or len(title) > 50:
-        abort(403)
     description = request.form["description"]
-    if not description or len(description) > 1000:
+    if not title or len(title) > 50 or not description or len(description) > 1000:
         abort(403)
 
     all_classes = messages.get_all_classes()
@@ -201,9 +192,7 @@ def update_message():
     for entry in request.form.getlist("classes"):
         if entry:
             class_title, class_value = entry.split(":")
-            if class_title not in all_classes:
-                abort(403)
-            if class_value not in all_classes[class_title]:
+            if class_title not in all_classes or class_value not in all_classes[class_title]:
                 abort(403)
             classes_selected.append((class_title, class_value))
 
@@ -215,19 +204,24 @@ def update_message():
 def remove_message(message_id):
     """Deletes a message or displays a confirmation form."""
     require_login()
+    user_id = session["user_id"]
+
     message = messages.get_message(message_id)
-    if not message:
-        abort(404)
-    if message["user_id"] != session["user_id"]:
+    if not message or message["user_id"] != user_id:
         abort(403)
 
     if request.method == "GET":
         return render_template("remove_message.html", message=message)
 
     check_csrf()
+
+    if "back" in request.form:
+        return redirect(f"/message/{message_id}")
+
     if "remove" in request.form:
-        messages.remove_message(message_id)
+        messages.remove_message(message_id, user_id)
         return redirect("/")
+
     return redirect(f"/message/{message_id}")
 
 
@@ -278,9 +272,7 @@ def login():
 @app.route("/logout")
 def logout():
     """Logs out the user."""
-    if "user_id" in session:
-        del session["user_id"]
-        del session["username"]
+    session.clear()
     return redirect("/")
 
 
@@ -307,7 +299,7 @@ def show_thread(thread_id):
     """Displays the messages of a thread."""
     require_login()
     user_id = session["user_id"]
-    msgs = threads.get_messages(thread_id)
+    msgs = threads.get_messages(thread_id, user_id)
     return render_template("thread.html", messages=msgs, thread_id=thread_id, user_id=user_id)
 
 

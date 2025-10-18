@@ -1,4 +1,10 @@
+"""
+This module contains functions related to thread management
+and messages in threads for the friend-app project.
+"""
+
 import db
+from flask import abort
 
 def get_or_create_thread(ad_id, user1_id, user2_id):
     """Returns an existing thread or creates a new one."""
@@ -12,9 +18,16 @@ def get_or_create_thread(ad_id, user1_id, user2_id):
     sql = "INSERT INTO threads (ad_id, user1_id, user2_id) VALUES (?, ?, ?)"
     return db.execute(sql, [ad_id, user1_id, user2_id])
 
+def user_in_thread(thread_id, user_id):
+    """Checks if the user is a participant of the thread."""
+    sql = "SELECT 1 FROM threads WHERE id = ? AND (user1_id = ? OR user2_id = ?)"
+    result = db.query(sql, [thread_id, user_id, user_id])
+    return bool(result)
 
-def get_messages(thread_id):
+def get_messages(thread_id, user_id):
     """Returns the messages of a thread in chronological order."""
+    if not user_in_thread(thread_id, user_id):
+        abort(403)
     sql = """
     SELECT tm.sender_id, u.username AS sender_name, tm.content, tm.created_at
     FROM thread_messages tm
@@ -24,12 +37,12 @@ def get_messages(thread_id):
     """
     return db.query(sql, [thread_id])
 
-
 def send_message(thread_id, sender_id, content):
     """Adds a message to a thread."""
+    if not user_in_thread(thread_id, sender_id):
+        abort(403)
     sql = "INSERT INTO thread_messages (thread_id, sender_id, content) VALUES (?, ?, ?)"
     db.execute(sql, [thread_id, sender_id, content])
-
 
 def get_user_threads(user_id):
     """Retrieves all threads in which the user participates."""
@@ -41,7 +54,6 @@ def get_user_threads(user_id):
              ORDER BY t.created_at DESC"""
     return db.query(sql, [user_id, user_id, user_id])
 
-
 def get_threads_by_message(ad_id):
     """Returns all threads related to a specific ad/message."""
     sql = """SELECT t.id, t.user1_id, t.user2_id, u1.username AS user1_name, u2.username AS user2_name
@@ -51,5 +63,4 @@ def get_threads_by_message(ad_id):
              WHERE t.ad_id = ?
              ORDER BY t.created_at DESC"""
     return db.query(sql, [ad_id])
-
 
