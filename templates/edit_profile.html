@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}Muokkaa profiilia{% endblock %}
+
+{% block content %}
+<h2>Muokkaa profiilia</h2>
+
+<form action="{{ url_for('update_profile') }}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+    <p>
+        Käyttäjänimi: <strong>{{ user.username }}</strong>
+    </p>
+
+    <p>
+        Ikä:<br>
+        <input type="number" name="age" value="{{ user.age or '' }}" min="1" max="150">
+    </p>
+
+    <p>
+        Bio:<br>
+        <textarea name="bio" rows="5" cols="50">{{ user.bio or '' }}</textarea>
+    </p>
+
+    <p>
+        Profiilikuva:<br>
+        {% if user.has_image %}
+            <img src="/image/{{ user.id }}" alt="Profiilikuva" style="max-width: 200px;"><br>
+        {% endif %}
+        <input type="file" name="image" accept=".jpg">
+    </p>
+
+    <button type="submit">Tallenna muutokset</button>
+</form>
+{% endblock %}
+

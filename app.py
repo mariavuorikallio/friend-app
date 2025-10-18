@@ -84,6 +84,37 @@ def show_image(user_id):
     return response
 
 
+@app.route("/edit_profile", methods=["GET", "POST"])
+def edit_profile():
+    require_login()
+    user_id = session["user_id"]
+    user = users.get_user(user_id)
+    if not user:
+        abort(404)
+
+    if request.method == "GET":
+        return render_template("edit_profile.html", user=user)
+
+    check_csrf()
+
+    age = request.form.get("age")
+    bio = request.form.get("bio")
+    if age:
+        try:
+            age = int(age)
+        except ValueError:
+            age = None
+
+    file = request.files.get("image")
+    if file and file.filename.endswith(".jpg"):
+        image = file.read()
+        if len(image) <= 100 * 1024:  # max 100kb
+            users.update_image(user_id, image)
+
+    users.update_profile(user_id, age, bio)
+    return redirect(f"/user/{user_id}")
+
+
 @app.route("/find_message")
 def find_message():
     """Searches messages by a query string."""
@@ -241,13 +272,19 @@ def register():
 @app.route("/create", methods=["POST"])
 def create():
     """Creates a new user."""
-    check_csrf()  # <--- Lisätty CSRF-tarkistus
+    check_csrf()
 
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
         return "ERROR: passwords do not match"
+        
+    age = request.form.get("age")
+    bio = request.form.get("bio")
+
+    age = int(age) if age else None
+    bio = bio if bio else None
 
     try:
         user_id = users.create_user(username, password1)

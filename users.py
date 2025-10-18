@@ -21,11 +21,11 @@ def get_messages(user_id):
     return db.query(sql, [user_id])
 
 
-def create_user(username, password):
-    """Creates a new user and hashes the password."""
+def create_user(username, password, age=None, bio=None):
+    """Creates a new user and hashes the password. Age and bio are optional."""
     password_hash = generate_password_hash(password)
-    sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-    user_id = db.execute(sql, [username, password_hash])
+    sql = "INSERT INTO users (username, password_hash, age, bio) VALUES (?, ?, ?, ?)"
+    user_id = db.execute(sql, [username, password_hash, age, bio])
     return user_id
 
 
@@ -54,4 +54,9 @@ def get_image(user_id):
     sql = "SELECT image FROM users WHERE id = ?"
     result = db.query(sql, [user_id])
     return result[0]["image"] if result else None
+
+
+def update_profile(user_id, age=None, bio=None):
+    sql = "UPDATE users SET age = ?, bio = ? WHERE id = ?"
+    db.execute(sql, [age, bio, user_id])
 
