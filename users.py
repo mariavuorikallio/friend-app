@@ -7,8 +7,8 @@ import db
 
 
 def get_user(user_id):
-    """Returns user information by user ID, including whether the user has a profile image."""
-    sql = """SELECT id, username, image IS NOT NULL AS has_image
+    """Returns user information by user ID, including age, bio, and whether the user has a profile image."""
+    sql = """SELECT id, username, age, bio, image IS NOT NULL AS has_image
              FROM users
              WHERE id = ?"""
     result = db.query(sql, [user_id])
@@ -57,6 +57,8 @@ def get_image(user_id):
 
 
 def update_profile(user_id, age=None, bio=None):
+    """Updates the user's age and bio."""
     sql = "UPDATE users SET age = ?, bio = ? WHERE id = ?"
     db.execute(sql, [age, bio, user_id])
+
 

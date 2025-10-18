@@ -5,22 +5,28 @@
 {% block content %}
 <h2>Muokkaa profiilia</h2>
 
-<form action="/update_profile" method="post" enctype="multipart/form-data">
+<form action="/edit_profile" method="post" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
-    <p>Profiilikuva: <br>
-       <input type="file" name="image" accept=".jpg">
+    <p>
+        Ikä: <br>
+        <input type="number" name="age" min="1" max="150" value="{{ user.age or '' }}">
     </p>
 
-    <p>Ikä: <br>
-       <input type="number" name="age" min="1" max="150" value="{{ user.age or '' }}">
+    <p>
+        Bio: <br>
+        <textarea name="bio" rows="5" cols="50">{{ user.bio or '' }}</textarea>
     </p>
 
-    <p>Bio: <br>
-       <textarea name="bio" rows="5" cols="50">{{ user.bio or '' }}</textarea>
+    <p>
+        Profiilikuva (jpg, max 100kb): <br>
+        <input type="file" name="image" accept=".jpg">
     </p>
 
     <input type="submit" value="Tallenna">
 </form>
+
+<p><a href="/user/{{ user.id }}">Takaisin profiiliin</a></p>
 {% endblock %}
+
 
