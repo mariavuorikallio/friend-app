@@ -5,7 +5,7 @@ This module contains the main logic of the Friend App application.
 import re
 import secrets
 import sqlite3
-from flask import Flask, abort, redirect, render_template, request, session, make_response
+from flask import Flask, abort, redirect, render_template, request, session, make_response, flash, get_flashed_messages
 
 import config
 import messages
@@ -103,18 +103,28 @@ def edit_profile():
 
     age = request.form.get("age")
     bio = request.form.get("bio")
+
+    if not age or not bio:
+        flash("Ikä ja bio ovat pakollisia kenttiä!")
+        return redirect("/edit_profile")
+
     try:
-        age = int(age) if age else None
+        age = int(age)
     except ValueError:
-        age = None
+        flash("Ikä tulee olla numero.")
+        return redirect("/edit_profile")
 
     file = request.files.get("image")
     if file and file.filename.endswith(".jpg"):
         image = file.read()
         if len(image) <= 100 * 1024:
             users.update_image(user_id, image)
+        else:
+            flash("Profiilikuva on liian suuri (max 100kb).")
+            return redirect("/edit_profile")
 
     users.update_profile(user_id, age, bio)
+    flash("Profiili päivitetty onnistuneesti!")
     return redirect(f"/user/{user_id}")
 
 

@@ -5,17 +5,27 @@
 {% block content %}
 <h2>Muokkaa profiilia</h2>
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flash-messages">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 <form action="/edit_profile" method="post" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
     <p>
         Ikä: <br>
-        <input type="number" name="age" min="1" max="150" value="{{ user.age or '' }}">
+        <input type="number" name="age" min="1" max="150" value="{{ user.age or '' }}" required />
     </p>
 
     <p>
         Bio: <br>
-        <textarea name="bio" rows="5" cols="50">{{ user.bio or '' }}</textarea>
+        <textarea name="bio" rows="5" cols="50" required>{{ user.bio or '' }}</textarea>
     </p>
 
     <p>
@@ -23,10 +33,13 @@
         <input type="file" name="image" accept=".jpg">
     </p>
 
-    <input type="submit" value="Tallenna">
+    <p>
+        <input type="submit" value="Tallenna">
+    </p>
 </form>
 
 <p><a href="/user/{{ user.id }}">Takaisin profiiliin</a></p>
 {% endblock %}
+
 
 
