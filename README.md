@@ -1,35 +1,47 @@
-# friend-app
+# Friend App
 
-## Sovelluksen toiminnot
+**Friend App** on Flask-pohjainen web-sovellus, jossa käyttäjät voivat luoda profiilin, selata ja julkaista seuranhakuilmoituksia sekä keskustella muiden käyttäjien kanssa yksityisesti.
 
-* Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
-* Käyttäjä pystyy lisäämään, muokkaamaan ja poistamaan seuranhakuilmoituksia
-* Käyttäjä näkee sovellukseen lisätyt seuranhakuilmoitukset
-* Käyttäjä pystyy etsimään ilmoituksia hakusanalla
-* Käyttäjä voi valita ilmoitukseen yhden tai useamman luokittelun. (esim. oman ikänsä)
+##  Sovelluksen toiminnot
 
-## Sovelluksen asennus
+* Käyttäjä voi luoda tunnuksen ja kirjautua sisään sovellukseen.
+* Käyttäjä voi päivittää omaa profiiliaan (ikä, bio ja profiilikuva).
+* Käyttäjä voi luoda, muokata ja poistaa omia seuranhakuilmoituksia.
+* Käyttäjä voi selata ja hakea muiden ilmoituksia hakusanan perusteella.
+* Käyttäjät voivat lähettää yksityisviestejä ilmoitusten kautta.
+* Profiilikuvan lisäys ja muokkaus (.jpg, max 100 kt).
+* Ilmoituksille voidaan määrittää luokkia tai ikäryhmiä.
 
-Asenna flask -kirjasto:
+---
 
-...
+## Asennusohjeet
 
-$ pip install flask 
-...
+1. **Kloonaa projekti:**
+   ```bash
+   git clone <repo-url>
+   cd friend-app
 
-Luo tietokannan taulut ja lisää alkutiedot:
+2. Luo ja aktivoi virtuaaliympäristö:
 
-...
+   python3 -m venv venv
+   source venv/bin/activate
 
-$ sqlite3 database.db < schema.sql
-$ sqlite3 database.db < init.sql
-...
+ 3. Asenna riippuvuudet:
 
-Voit käynnistää sovelluksen näin:
+   pip install -r requirements.txt
 
-...
+ 4. Luo tietokanta ja lisää alkutiedot:
 
-$ flask run
-...
+   sqlite3 database.db < schema.sql
+   sqlite3 database.db < init.sql
+   
+ 5. Käynnistä sovellus:
 
-- mahdolliset luokat tallennetaan tietokantaan.
+   flask run
+
+ 6. Avaa selaimessa:
+  
+  http://127.0.0.1:5000
+
+
+
