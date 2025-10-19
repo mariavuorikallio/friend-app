@@ -381,8 +381,21 @@ def show_thread(thread_id):
     """Displays the messages of a thread."""
     require_login()
     user_id = session["user_id"]
+
+    thread_info = threads.get_thread(thread_id)
+    if not thread_info:
+        abort(404)
+
     msgs = threads.get_messages(thread_id, user_id)
-    return render_template("thread.html", messages=msgs, thread_id=thread_id, user_id=user_id)
+    message_id = thread_info["ad_id"]
+
+    return render_template(
+        "thread.html",
+        messages=msgs,
+        thread_id=thread_id,
+        user_id=user_id,
+        message_id=message_id
+    )
 
 
 @app.route("/send_message", methods=["POST"])

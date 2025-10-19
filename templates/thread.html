@@ -3,6 +3,7 @@
 {% block title %}Keskustelu{% endblock %}
 
 {% block content %}
+
 <h2>Keskustelu</h2>
 
 <div class="chat-box">
@@ -23,6 +24,9 @@
   <input type="hidden" name="thread_id" value="{{ thread_id }}">
   <textarea name="content" placeholder="Kirjoita viesti..." required></textarea>
   <button type="submit">Lähetä</button>
+  
+  <p><a href="/message/{{ message_id }}">Takaisin ilmoitukseen</a></p>
 </form>
+
 {% endblock %}
 

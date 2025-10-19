@@ -64,3 +64,17 @@ def get_threads_by_message(ad_id):
              ORDER BY t.created_at DESC"""
     return db.query(sql, [ad_id])
 
+
+def get_thread(thread_id):
+    """Returns thread info, including the related ad/message ID."""
+    sql = "SELECT id, ad_id, user1_id, user2_id FROM threads WHERE id = ?"
+    result = db.query(sql, [thread_id])
+    if not result:
+        return None
+    row = result[0]
+    return {
+        "id": row["id"],
+        "ad_id": row["ad_id"],
+        "user1_id": row["user1_id"],
+        "user2_id": row["user2_id"]
+    }
