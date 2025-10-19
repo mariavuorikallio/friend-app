@@ -284,34 +284,51 @@ def register():
 
 @app.route("/create", methods=["POST"])
 def create():
-    """Creates a new user with optional age and bio."""
+    """Creates a new user with required age, bio, and optional profile image."""
     check_csrf()
 
-    username = request.form["username"]
-    password1 = request.form["password1"]
-    password2 = request.form["password2"]
-    if password1 != password2:
-        return "ERROR: passwords do not match"
-
+    username = request.form.get("username")
+    password1 = request.form.get("password1")
+    password2 = request.form.get("password2")
     age = request.form.get("age")
     bio = request.form.get("bio")
 
-    try:
-        age = int(age) if age else None
-    except ValueError:
-        age = None
+    if not username or not password1 or not password2 or not age or not bio:
+        flash("Kaikki kentät ovat pakollisia!")
+        return redirect("/register")
 
-    bio = bio.strip() if bio else None
+    if password1 != password2:
+        flash("Salasanat eivät täsmää!")
+        return redirect("/register")
+
+    try:
+        age = int(age)
+    except ValueError:
+        flash("Ikä tulee olla numero.")
+        return redirect("/register")
+
+    bio = bio.strip()
 
     try:
         user_id = users.create_user(username, password1, age, bio)
     except sqlite3.IntegrityError:
-        return "ERROR: username already taken"
+        flash("Käyttäjänimi on jo käytössä.")
+        return redirect("/register")
+
+    file = request.files.get("image")
+    if file and file.filename.endswith(".jpg"):
+        image = file.read()
+        if len(image) <= 100 * 1024:
+            users.update_image(user_id, image)
+        else:
+            flash("Profiilikuva on liian suuri (max 100kb).")
 
     session["user_id"] = user_id
     session["username"] = username
     session["csrf_token"] = secrets.token_hex(16)
-    return redirect("/")
+
+    flash("Käyttäjä luotu onnistuneesti!")
+    return redirect(f"/user/{user_id}")
 
 
 @app.route("/login", methods=["GET", "POST"])
