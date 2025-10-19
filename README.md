@@ -36,7 +36,7 @@
     ```flask run
 
  6. **Avaa selaimessa:**
-  ```http://127.0.0.1:5000
+    ```http://127.0.0.1:5000
 
 
 
