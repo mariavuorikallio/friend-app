@@ -78,3 +78,29 @@ def get_thread(thread_id):
         "user1_id": row["user1_id"],
         "user2_id": row["user2_id"]
     }
+    
+def get_unread_messages(user_id):
+    """Returns unread messages for the given user."""
+    sql = """
+    SELECT tm.id AS message_id, tm.thread_id, tm.sender_id, u.username AS sender_name,
+           tm.content, tm.created_at, t.ad_id
+    FROM thread_messages tm
+    JOIN threads t ON tm.thread_id = t.id
+    JOIN users u ON tm.sender_id = u.id
+    WHERE (t.user1_id = ? OR t.user2_id = ?)
+      AND tm.sender_id != ?
+      AND tm.read = 0
+    ORDER BY tm.created_at DESC
+    """
+    return db.query(sql, [user_id, user_id, user_id])
+
+
+def mark_thread_as_read(thread_id, user_id):
+    """Marks all messages in the thread as read for the current user."""
+    sql = """
+    UPDATE thread_messages
+    SET read = 1
+    WHERE thread_id = ? AND sender_id != ?
+    """
+    db.execute(sql, [thread_id, user_id])
+

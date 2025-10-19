@@ -10,6 +10,18 @@
     <a href="/new_message">Uusi ilmoitus</a> |
     <a href="/logout">Kirjaudu ulos</a>
   </p>
+
+  {% if unread_msgs %}
+    <h3>Lukemattomat viestit</h3>
+    <ul>
+      {% for msg in unread_msgs %}
+        <li>
+          Viesti <strong>{{ msg.sender_name }}</strong> ilmoituksestasi
+          <a href="/thread/{{ msg.thread_id }}">Avaa keskustelu</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 {% else %}
   <p>
     <a href="/login">Kirjaudu sisään</a> |

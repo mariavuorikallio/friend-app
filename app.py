@@ -36,9 +36,16 @@ def require_login():
 
 @app.route("/")
 def index():
-    """Displays the homepage messages."""
-    all_messages = messages.get_messages()
-    return render_template("index.html", messages=all_messages)
+    """Displays the homepage messages and unread messages for logged-in users."""
+    user_id = session.get("user_id")
+    if user_id:
+        unread_msgs = threads.get_unread_messages(user_id)
+    else:
+        unread_msgs = []
+
+    all_messages = messages.get_messages()  
+    return render_template("index.html", messages=all_messages, unread_msgs=unread_msgs)
+
 
 
 @app.route("/user/<int:user_id>")
@@ -327,7 +334,6 @@ def create():
     session["username"] = username
     session["csrf_token"] = secrets.token_hex(16)
 
-    flash("Käyttäjä luotu onnistuneesti!")
     return redirect(f"/user/{user_id}")
 
 
@@ -385,6 +391,8 @@ def show_thread(thread_id):
     thread_info = threads.get_thread(thread_id)
     if not thread_info:
         abort(404)
+
+    threads.mark_thread_as_read(thread_id, user_id)
 
     msgs = threads.get_messages(thread_id, user_id)
     message_id = thread_info["ad_id"]
