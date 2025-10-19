@@ -32,14 +32,21 @@
 <p><a href="/find_message">Etsi ilmoitus</a></p>
 
 <h2>Ilmoitukset</h2>
+{% if messages %}
 <ul>
   {% for message in messages %}
-  <li>
-    <a href="/message/{{ message.id }}">{{ message.title }} | {{ message.username }} | {{ message.user_age }} vuotta </a>
-  </li>
+    <li>
+      <a href="/message/{{ message.id }}">
+        {{ message.title }} | {{ message.username }} | {{ message.user_age }} vuotta
+      </a>
+    </li>
   {% endfor %}
 </ul>
+{% else %}
+<p>Ei vielä ilmoituksia.</p>
+{% endif %}
 {% endblock %}
+
 
 
 

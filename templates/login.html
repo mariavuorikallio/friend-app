@@ -5,7 +5,7 @@
 {% block content %}
 {% if session.username %}
   <p>
-    Olet kirjautunut nimellä {{ session.username }}
+    Olet kirjautunut nimellä {{ session.username | e }}
   </p>
   <p>
     <a href="/logout">Kirjaudu ulos</a>

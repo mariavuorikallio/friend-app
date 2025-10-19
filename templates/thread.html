@@ -12,7 +12,7 @@
       <p>
         <strong>
           <a href="/user/{{ msg.sender_id }}">{{ msg.sender_name }}</a>
-        </strong>: {{ msg.content | replace('\n', '<br>') | safe }}
+        </strong>: {{ msg.content | e | replace('\n', '<br>') | safe }}
       </p>
       <small>{{ msg.created_at }}</small>
     </div>
