@@ -2,9 +2,7 @@
 This module contains the main logic of the Friend App application.
 """
 
-import re
 import secrets
-import sqlite3
 from flask import Flask, abort, redirect, render_template, request, session, make_response, flash
 
 import config
@@ -41,9 +39,10 @@ def index():
     """Displays the homepage messages and unread messages for logged-in users."""
     user_id = session.get("user_id")
     unread_msgs = threads.get_unread_messages(user_id) if user_id else []
-
     all_messages = messages.get_messages()
-    return render_template("index.html", messages=all_messages, unread_msgs=unread_msgs)
+    return render_template(
+        "index.html", messages=all_messages, unread_msgs=unread_msgs
+    )
 
 
 @app.route("/user/<int:user_id>")
@@ -149,14 +148,18 @@ def show_message(message_id):
     message = messages.get_message(message_id)
     if not message:
         abort(404)
-        
+
     user = users.get_user(message["user_id"])
     if not user:
         abort(404)
 
     classes_list = messages.get_classes(message_id)
     user_id = session.get("user_id")
-    threads_list = threads.get_threads_by_message(message_id) if user_id and user_id == message["user_id"] else []
+    threads_list = (
+        threads.get_threads_by_message(message_id)
+        if user_id and user_id == message["user_id"]
+        else []
+    )
 
     return render_template(
         "show_message.html",
@@ -182,18 +185,16 @@ def create_message():
     check_csrf()
 
     title = request.form["title"]
-    if not title or len(title) > 50:
+    description = request.form["description"]
+    user_id = session["user_id"]
+
+    if not title or len(title) > 50 or not description or len(description) > 1000:
         abort(403)
 
-    description = request.form["description"]
-    if not description or len(description) > 1000:
-        abort(403)
-        
-    user_id = session["user_id"]
     user = users.get_user(user_id)
     if not user:
         abort(403)
-    age = user["age"] 
+    age = user["age"]
 
     all_classes = messages.get_all_classes()
     classes_selected = []
@@ -320,7 +321,7 @@ def create():
 
     try:
         user_id = users.create_user(username, password1, age, bio)
-    except sqlite3.IntegrityError:
+    except Exception:
         flash("Käyttäjänimi on jo käytössä.")
         return redirect("/register")
 
@@ -425,5 +426,6 @@ def user_threads():
     user_id = session["user_id"]
     thread_list = threads.get_user_threads(user_id)
     return render_template("threads.html", threads=thread_list)
+
 
 
