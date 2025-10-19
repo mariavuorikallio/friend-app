@@ -41,8 +41,8 @@ def get_classes(message_id):
 def get_messages():
     """Returns all messages with user info, newest first."""
     sql = (
-        "SELECT messages.id, messages.title, messages.description, messages.age, "
-        "users.username AS name "
+        "SELECT messages.id, messages.title, messages.description, messages.age AS message_age, "
+        "users.id AS user_id, users.username, users.age AS user_age "
         "FROM messages "
         "JOIN users ON messages.user_id = users.id "
         "ORDER BY messages.id DESC"
@@ -65,8 +65,8 @@ def get_user_messages(user_id):
 def get_message(message_id):
     """Returns a single message with user info, or None if not found."""
     sql = (
-        "SELECT messages.id, messages.title, messages.description, messages.age, "
-        "users.id AS user_id, users.username "
+        "SELECT messages.id, messages.title, messages.description, messages.age AS message_age, "
+        "users.id AS user_id, users.username, users.age AS user_age "
         "FROM messages "
         "JOIN users ON messages.user_id = users.id "
         "WHERE messages.id = ?"

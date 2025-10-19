@@ -149,6 +149,10 @@ def show_message(message_id):
     message = messages.get_message(message_id)
     if not message:
         abort(404)
+        
+    user = users.get_user(message["user_id"])
+    if not user:
+        abort(404)
 
     classes_list = messages.get_classes(message_id)
     user_id = session.get("user_id")
@@ -158,7 +162,8 @@ def show_message(message_id):
         "show_message.html",
         message=message,
         classes=classes_list,
-        threads=threads_list
+        threads=threads_list,
+        user=user
     )
 
 
@@ -183,12 +188,13 @@ def create_message():
     description = request.form["description"]
     if not description or len(description) > 1000:
         abort(403)
-
-    age = request.form["age"]
-    if not re.search("^[1-9][0-9]{0,2}$", age):
-        abort(403)
-
+        
     user_id = session["user_id"]
+    user = users.get_user(user_id)
+    if not user:
+        abort(403)
+    age = user["age"] 
+
     all_classes = messages.get_all_classes()
     classes_selected = []
 

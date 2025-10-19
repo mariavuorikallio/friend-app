@@ -13,10 +13,7 @@
     Kuvaus: <br />
     <textarea name="description" rows="8" cols="60" maxlength="1000" required></textarea>
   </p>
-  <p>
-    Ikä: <br />
-    <input type="text" name="age" size="2" pattern="[1-9][0-9]{0,2}" required/> vuotta
-  </p>
+
   {% for class in classes %}
   <p>
     {{ class }}: <br />
@@ -28,6 +25,7 @@
     </select>
   </p>
   {% endfor %}
+
   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   <input type="submit" value="Luo ilmoitus" />
 </form>

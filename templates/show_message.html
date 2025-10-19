@@ -13,11 +13,11 @@
 {% endif %}
 
 <p>{{ message.description | replace('\n', '<br>') | safe }}</p>
-<p>Ikä: {{ message.age }} vuotta</p>
+<p>Ikä: {{ user.age }} vuotta</p>
 <p>
   Käyttäjä:
   {% if session.user_id %}
-    <a href="/user/{{ message.user_id }}">{{ message.username }}</a>
+    <a href="/user/{{ message.user_id }}">{{ message.username }}  {{ message.user_age }} vuotta</a>
   {% else %}
     Kirjaudu nähdäksesi käyttäjän
   {% endif %}
