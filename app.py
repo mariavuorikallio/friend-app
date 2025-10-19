@@ -53,10 +53,14 @@ def show_user(user_id):
         abort(404)
 
     user_messages = users.get_messages(user_id)
+    image = users.get_image(user_id)
+    has_image = image is not None
+    
     back_to = request.args.get("from", "/")
     return render_template(
         "show_user.html",
         user=user,
+        has_image=has_image,
         messages=user_messages,
         previous_page=back_to
     )
@@ -121,12 +125,17 @@ def edit_profile():
         return redirect("/edit_profile")
 
     file = request.files.get("image")
-    if file and file.filename.endswith(".jpg"):
-        image = file.read()
-        if len(image) <= 100 * 1024:
-            users.update_image(user_id, image)
+    if file and file.filename != "":
+        if file.filename.lower().endswith((".jpg", ".jpeg")):
+            image = file.read()
+            if len(image) <= 100 * 1024:
+                users.update_image(user_id, image)
+                flash("Profiilikuva päivitetty!")
+            else:
+                flash("Profiilikuva on liian suuri (max 100kb).")
+                return redirect("/edit_profile")
         else:
-            flash("Profiilikuva on liian suuri (max 100kb).")
+            flash("Väärä tiedostomuoto, käytä .jpg tai .jpeg")
             return redirect("/edit_profile")
 
     users.update_profile(user_id, age, bio)

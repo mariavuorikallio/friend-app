@@ -5,12 +5,12 @@
 {% block content %}
 <h2>Käyttäjä: {{ user.username }}</h2>
 
-{% if user.has_image %}
-    <p>Profiilikuva:</p>
-    <img src="/image/{{ user.id }}?v={{ session.csrf_token }}" 
-         alt="Profiilikuva" style="max-width: 200px; max-height: 200px;">
+{% if has_image %}
+  <p>Profiilikuva:</p>
+  <img src="{{ url_for('show_image', user_id=user.id) }}?v={{ session.csrf_token }}"
+       alt="Profiilikuva" style="max-width:200px;max-height:200px;">
 {% else %}
-    <p>Käyttäjällä ei ole profiilikuvaa.</p>
+  <p>Käyttäjällä ei ole profiilikuvaa.</p>
 {% endif %}
 
 <p>Ikä: {{ user.age or 'Ei asetettu' }}</p>
