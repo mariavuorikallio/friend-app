@@ -53,8 +53,6 @@ def show_user(user_id):
         abort(404)
 
     user_messages = users.get_messages(user_id)
-    total_messages = len(user_messages)
-    latest_message = user_messages[0] if user_messages else None
     image = users.get_image(user_id)
     has_image = image is not None
     
