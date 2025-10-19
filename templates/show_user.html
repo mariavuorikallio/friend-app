@@ -22,6 +22,25 @@
 
 <hr>
 
+<h3>Tilastot</h3>
+<p>Yhteensä viestejä: {{ total_messages }}</p>
+{% if latest_message %}
+<p>Uusin viesti: <a href="/message/{{ latest_message.id }}">{{ latest_message.title }}</a></p>
+{% endif %}
+
+<h3>Viestit</h3>
+{% if messages %}
+<ul>
+  {% for message in messages %}
+    <li><a href="/message/{{ message.id }}">{{ message.title }}</a></li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Käyttäjällä ei ole viestejä.</p>
+{% endif %}
+
+<hr>
+
 <p><a href="{{ previous_page }}">Takaisin</a></p>
 
 {% endblock %}

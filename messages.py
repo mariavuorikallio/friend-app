@@ -61,6 +61,12 @@ def remove_message(message_id, user_id):
     """Remove a message by ID and its associated classes."""
     sql = "DELETE FROM message_classes WHERE message_id = ?"
     db.execute(sql, [message_id])
+    
+    threads_result = db.query("SELECT id FROM threads WHERE ad_id = ?", [message_id])
+    for thread in threads_result:
+        thread_id = thread[0]
+        db.execute("DELETE FROM thread_messages WHERE thread_id = ?", [thread_id])
+        db.execute("DELETE FROM threads WHERE id = ?", [thread_id])
 
     sql = "DELETE FROM messages WHERE id = ? AND user_id = ?"
     db.execute(sql, [message_id, user_id])
