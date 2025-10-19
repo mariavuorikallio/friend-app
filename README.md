@@ -16,31 +16,37 @@
 
 ## Asennusohjeet
 
-1. **Kloonaa projekti:**
-   ```bash
-   git clone <repo-url>
-   cd friend-app
+### 1. Kloonaa projekti
+```bash
+git clone <repo-url>
+cd friend-app
+```
 
-2. **Luo ja aktivoi virtuaaliympäristö:**
-   ```python3 -m venv venv
-   source venv/bin/activate
+### 2. Luo ja aktivoi virtuaaliympäristö
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
- 3. **Asenna riippuvuudet:**
+### 3. Asenna riippuvuudet
+```bash
+pip install -r requirements.txt
+```
 
-   pip install -r requirements.txt
+### 4. Luo tietokanta ja lisää alkutiedot
+```bash
+sqlite3 database.db < schema.sql
+sqlite3 database.db < init.sql
+```
 
- 5. **Luo tietokanta ja lisää alkutiedot:**
+### 5. Käynnistä sovellus
+```bash
+flask run
+```
 
-   sqlite3 database.db < schema.sql
-   sqlite3 database.db < init.sql
-   
- 6. **Käynnistä sovellus:**
-
-    flask run
-
- 7. **Avaa selaimessa:**
-
-    http://127.0.0.1:5000
-
+### 6. Avaa selaimessa
+```text
+http://127.0.0.1:5000
+```
 
 
