@@ -26,16 +26,20 @@
    source venv/bin/activate
 
  3. **Asenna riippuvuudet:**
-    ```pip install -r requirements.txt
 
- 4. **Luo tietokanta ja lisää alkutiedot:**
+   pip install -r requirements.txt
+
+ 5. **Luo tietokanta ja lisää alkutiedot:**
+
    sqlite3 database.db < schema.sql
    sqlite3 database.db < init.sql
    
- 5. **Käynnistä sovellus:**
+ 6. **Käynnistä sovellus:**
+
     flask run
 
- 6. **Avaa selaimessa:**
+ 7. **Avaa selaimessa:**
+
     http://127.0.0.1:5000
 
 
