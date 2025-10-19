@@ -29,14 +29,14 @@
     ```pip install -r requirements.txt
 
  4. **Luo tietokanta ja lisää alkutiedot:**
-    ```sqlite3 database.db < schema.sql
+   sqlite3 database.db < schema.sql
    sqlite3 database.db < init.sql
    
  5. **Käynnistä sovellus:**
-    ```flask run
+    flask run
 
  6. **Avaa selaimessa:**
-    ```http://127.0.0.1:5000
+    http://127.0.0.1:5000
 
 
 
