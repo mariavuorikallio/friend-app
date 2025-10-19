@@ -7,7 +7,8 @@
 
 {% if user.has_image %}
     <p>Profiilikuva:</p>
-    <img src="/image/{{ user.id }}" alt="Profiilikuva" style="max-width: 200px; max-height: 200px;">
+    <img src="/image/{{ user.id }}?v={{ session.csrf_token }}" 
+         alt="Profiilikuva" style="max-width: 200px; max-height: 200px;">
 {% else %}
     <p>Käyttäjällä ei ole profiilikuvaa.</p>
 {% endif %}

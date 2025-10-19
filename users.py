@@ -3,6 +3,7 @@ Module for handling user data and user profiles in the Friend App.
 """
 
 import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 def get_user(user_id):
@@ -24,16 +25,21 @@ def get_messages(user_id):
 
 
 def create_user(username, password, age, bio):
-    """Create a new user."""
-    sql = "INSERT INTO users (username, password, age, bio) VALUES (?, ?, ?, ?)"
-    return db.execute(sql, [username, password, age, bio])
+    """Create a new user with a hashed password."""
+    password_hash = generate_password_hash(password)
+    sql = "INSERT INTO users (username, password_hash, age, bio) VALUES (?, ?, ?, ?)"
+    return db.execute(sql, [username, password_hash, age, bio])
 
 
 def check_login(username, password):
     """Check user login credentials and return user ID if valid."""
-    sql = "SELECT id FROM users WHERE username = ? AND password = ?"
-    result = db.query(sql, [username, password])
-    return result[0][0] if result else None
+    sql = "SELECT id, password_hash FROM users WHERE username = ?"
+    result = db.query(sql, [username])
+    if result:
+        user_id, password_hash = result[0]
+        if check_password_hash(password_hash, password):
+            return user_id
+    return None
 
 
 def update_profile(user_id, age, bio):

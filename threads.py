@@ -2,9 +2,8 @@
 Module for handling message threads and messages within threads in the Friend App.
 """
 
-from datetime import datetime
 import db
-
+from datetime import datetime
 
 def get_threads_by_message(message_id):
     """Return all threads for a specific message."""
@@ -20,7 +19,6 @@ def get_threads_by_message(message_id):
     """
     return db.query(sql, [message_id])
 
-
 def get_thread(thread_id):
     """Return a single thread by ID."""
     sql = """
@@ -30,7 +28,6 @@ def get_thread(thread_id):
     """
     result = db.query(sql, [thread_id])
     return result[0] if result else None
-
 
 def get_user_threads(user_id):
     """Return all threads for a specific user."""
@@ -50,8 +47,7 @@ def get_user_threads(user_id):
     """
     return db.query(sql, [user_id, user_id, user_id])
 
-
-def get_messages(thread_id, _user_id=None):
+def get_messages(thread_id, user_id):
     """Return messages in a thread for a user."""
     sql = """
     SELECT m.id, m.thread_id, m.sender_id, u.username AS sender_name, m.content, m.created_at
@@ -62,7 +58,6 @@ def get_messages(thread_id, _user_id=None):
     """
     return db.query(sql, [thread_id])
 
-
 def mark_thread_as_read(thread_id, user_id):
     """Mark all messages in a thread as read for the given user."""
     sql = """
@@ -71,7 +66,6 @@ def mark_thread_as_read(thread_id, user_id):
     WHERE thread_id = ? AND sender_id != ?
     """
     db.execute(sql, [thread_id, user_id])
-
 
 def get_or_create_thread(message_id, user_id, owner_id):
     """
@@ -91,7 +85,6 @@ def get_or_create_thread(message_id, user_id, owner_id):
     thread_id = db.execute(sql, [user_id, owner_id, message_id])
     return thread_id
 
-
 def send_message(thread_id, sender_id, content):
     """Send a message in a thread."""
     sql = """
@@ -99,5 +92,16 @@ def send_message(thread_id, sender_id, content):
     VALUES (?, ?, ?, ?, 0)
     """
     db.execute(sql, [thread_id, sender_id, content, datetime.utcnow()])
+
+def get_unread_messages(user_id):
+    """Return all unread messages for a specific user."""
+    sql = """
+    SELECT tm.thread_id, tm.sender_id, u.username AS sender_name
+    FROM thread_messages tm
+    JOIN users u ON tm.sender_id = u.id
+    WHERE tm.sender_id != ? AND tm.read_by_user = 0
+    ORDER BY tm.created_at DESC
+    """
+    return db.query(sql, [user_id])
 
 
