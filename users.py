@@ -1,5 +1,5 @@
 """
-This module contains functions and database queries related to users.
+This module contains functions and database queries related to users for Friend App.
 """
 
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -8,16 +8,18 @@ import db
 
 def get_user(user_id):
     """Returns user information by user ID, including age, bio, and whether the user has a profile image."""
-    sql = """SELECT id, username, age, bio, image IS NOT NULL AS has_image
-             FROM users
-             WHERE id = ?"""
+    sql = (
+        "SELECT id, username, age, bio, image IS NOT NULL AS has_image "
+        "FROM users "
+        "WHERE id = ?"
+    )
     result = db.query(sql, [user_id])
     return result[0] if result else None
 
 
-def get_messages(user_id): 
-    """Returns the messages of a user.""" 
-    sql = "SELECT id, title FROM messages WHERE user_id = ? ORDER BY id DESC" 
+def get_messages(user_id):
+    """Returns all messages posted by a specific user."""
+    sql = "SELECT id, title FROM messages WHERE user_id = ? ORDER BY id DESC"
     return db.query(sql, [user_id])
 
 
@@ -60,5 +62,6 @@ def update_profile(user_id, age=None, bio=None):
     """Updates the user's age and bio."""
     sql = "UPDATE users SET age = ?, bio = ? WHERE id = ?"
     db.execute(sql, [age, bio, user_id])
+
 
 

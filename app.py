@@ -5,18 +5,20 @@ This module contains the main logic of the Friend App application.
 import re
 import secrets
 import sqlite3
-from flask import Flask, abort, redirect, render_template, request, session, make_response, flash, get_flashed_messages
+from flask import Flask, abort, redirect, render_template, request, session, make_response, flash
 
 import config
 import messages
 import users
-import threads  
+import threads
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+
 @app.before_request
 def ensure_csrf_token():
+    """Ensures that a CSRF token exists in the session."""
     if "csrf_token" not in session:
         session["csrf_token"] = secrets.token_hex(16)
 
@@ -38,14 +40,10 @@ def require_login():
 def index():
     """Displays the homepage messages and unread messages for logged-in users."""
     user_id = session.get("user_id")
-    if user_id:
-        unread_msgs = threads.get_unread_messages(user_id)
-    else:
-        unread_msgs = []
+    unread_msgs = threads.get_unread_messages(user_id) if user_id else []
 
-    all_messages = messages.get_messages()  
+    all_messages = messages.get_messages()
     return render_template("index.html", messages=all_messages, unread_msgs=unread_msgs)
-
 
 
 @app.route("/user/<int:user_id>")
@@ -54,11 +52,15 @@ def show_user(user_id):
     user = users.get_user(user_id)
     if not user:
         abort(404)
-    user_messages = users.get_messages(user_id)
-    
-    back_to = request.args.get("from", "/") 
 
-    return render_template("show_user.html", user=user, messages=user_messages, previous_page=back_to)
+    user_messages = users.get_messages(user_id)
+    back_to = request.args.get("from", "/")
+    return render_template(
+        "show_user.html",
+        user=user,
+        messages=user_messages,
+        previous_page=back_to
+    )
 
 
 @app.route("/add_image", methods=["GET", "POST"])
@@ -107,10 +109,8 @@ def edit_profile():
         return render_template("edit_profile.html", user=user)
 
     check_csrf()
-
     age = request.form.get("age")
     bio = request.form.get("bio")
-
     if not age or not bio:
         flash("Ikä ja bio ovat pakollisia kenttiä!")
         return redirect("/edit_profile")
@@ -152,10 +152,7 @@ def show_message(message_id):
 
     classes_list = messages.get_classes(message_id)
     user_id = session.get("user_id")
-
-    threads_list = []
-    if user_id and user_id == message["user_id"]:
-        threads_list = threads.get_threads_by_message(message_id)
+    threads_list = threads.get_threads_by_message(message_id) if user_id and user_id == message["user_id"] else []
 
     return render_template(
         "show_message.html",
@@ -252,7 +249,7 @@ def update_message():
             if class_title not in all_classes or class_value not in all_classes[class_title]:
                 abort(403)
             classes_selected.append((class_title, class_value))
-    
+
     user_id = session["user_id"]
     messages.update_message(message_id, user_id, title, description, classes_selected)
     return redirect(f"/message/{message_id}")
@@ -263,7 +260,6 @@ def remove_message(message_id):
     """Deletes a message or displays a confirmation form."""
     require_login()
     user_id = session["user_id"]
-
     message = messages.get_message(message_id)
     if not message or message["user_id"] != user_id:
         abort(403)
@@ -343,8 +339,7 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
 
-    check_csrf()  
-
+    check_csrf()
     username = request.form["username"]
     password = request.form["password"]
     user_id = users.check_login(username, password)
@@ -369,7 +364,6 @@ def start_thread(message_id):
     """Starts a conversation with the ad/message owner."""
     require_login()
     user_id = session["user_id"]
-
     msg = messages.get_message(message_id)
     if not msg:
         abort(404)
@@ -384,16 +378,14 @@ def start_thread(message_id):
 
 @app.route("/thread/<int:thread_id>")
 def show_thread(thread_id):
-    """Displays the messages of a thread."""
+    """Displays the messages of a thread and marks them as read."""
     require_login()
     user_id = session["user_id"]
-
     thread_info = threads.get_thread(thread_id)
     if not thread_info:
         abort(404)
 
     threads.mark_thread_as_read(thread_id, user_id)
-
     msgs = threads.get_messages(thread_id, user_id)
     message_id = thread_info["ad_id"]
 
@@ -422,12 +414,10 @@ def send_message():
 
 @app.route("/threads")
 def user_threads():
-    """Displays all threads of the user."""
+    """Displays all threads of the logged-in user."""
     require_login()
     user_id = session["user_id"]
     thread_list = threads.get_user_threads(user_id)
     return render_template("threads.html", threads=thread_list)
-
-
 
 
